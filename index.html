@@ -202,6 +202,95 @@ button.sq{cursor:pointer}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);opacity:0;
   background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:500;pointer-events:none;transition:opacity .2s,transform .2s;z-index:30;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* game (chess.com-like) */
+#scr-game{--sq:clamp(34px, min(calc((100vw - 16px) / 8), calc((100vh - 410px) / 8)), 72px);padding-bottom:110px}
+.gwrap{width:calc(var(--sq) * 8);margin:0 auto;display:flex;flex-direction:column}
+.mstrip{display:flex;align-items:center;gap:2px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;padding:6px 0 10px;font-size:1rem}
+.mstrip::-webkit-scrollbar{display:none}
+.mstrip .mn{color:var(--muted);padding:0 2px 0 10px;font-size:.88rem}
+.mstrip .mn:first-child{padding-left:0}
+.mstrip button{display:inline-flex;align-items:center;gap:3px;border:0;background:none;padding:4px 7px;border-radius:6px;cursor:pointer;color:var(--ink);font-weight:600;flex:none}
+.mstrip button.on{background:var(--s3)}
+.mstrip .empty{color:var(--muted)}
+.mstrip .mres{padding-left:12px;color:var(--muted);font-weight:600}
+.fig{font-family:"Segoe UI Symbol","Noto Sans Symbols 2","DejaVu Sans",serif;font-size:1.12em;font-weight:400;margin-right:1px;font-variant-emoji:text}
+.ci{width:22px;height:22px;flex:none;display:block}
+.ci.sm{width:15px;height:15px}
+.pbar{display:flex;align-items:center;gap:10px;padding:10px 0}
+.av{width:40px;height:40px;border-radius:6px;background:#3A4049;display:grid;place-items:center;flex:none;overflow:hidden}
+.av.me{background:#C9CFD6}
+.av svg{width:84%;height:84%}
+.pinfo{flex:1;min-width:0}
+.pname{font-weight:600;font-size:.97rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pname .r{color:var(--muted);font-weight:400}
+.delta{font-weight:600;font-size:.9rem}
+.delta.up{color:var(--ok)}.delta.dn{color:var(--danger)}
+.psub{display:flex;align-items:center;min-height:22px;font-size:.82rem;color:var(--muted)}
+.psub .cp{width:19px;height:19px;display:inline-grid;margin-right:-5px}
+.psub .cp svg{width:100%;height:100%}
+.psub .cp .pc{font-size:17px}
+.psub .adv{margin-left:10px}
+.thinking{color:var(--accent)}
+.clock{flex:none;min-width:98px;text-align:right;padding:7px 12px;border-radius:6px;background:var(--s2);color:var(--muted);font-size:1.4rem;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2}
+.clock.on{background:var(--ink);color:var(--bg)}
+.clock.low.on{background:var(--danger);color:#fff}
+.gnote{margin-top:2px;font-size:.93rem;padding:11px 14px;border-radius:12px;background:var(--s1);min-height:46px}
+.gnote.alert{color:var(--danger)}
+.gnote.done b{color:var(--accent)}
+.nrow{display:flex;gap:10px;align-items:flex-start}
+.bdg{position:absolute;top:3%;right:3%;width:38%;height:38%;z-index:4;pointer-events:none}
+.bdg svg{width:100%;height:100%;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+.toolbar{position:fixed;left:0;right:0;bottom:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--line);z-index:10}
+.toolbar .in{max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);align-items:center;gap:8px}
+.tb{background:none;border:0;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.78rem;padding:6px 0;cursor:pointer}
+.tb svg{width:24px;height:24px}
+.tb:not(:disabled):hover{color:var(--ink)}
+.tb.star{background:var(--accent);color:var(--on-accent);border-radius:12px;min-height:56px;justify-content:center;font-weight:600}
+.tb.star:disabled{background:var(--s2);color:var(--muted)}
+.olist{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+
+/* review */
+#scr-review{padding-bottom:120px}
+.rv-title{font-size:1.1rem}
+.rv-sp{width:90px}
+.rv{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.coach{display:flex;gap:14px;align-items:center}
+.cav{width:58px;height:58px;border-radius:50%;background:var(--s2);flex:none;display:grid;place-items:center}
+.cav svg{width:78%;height:78%}
+.cav .pc{font-size:40px}
+.bubble{position:relative;flex:1;background:#F2F3F5;color:#1B1F24;border-radius:14px;padding:13px 16px;font-weight:500}
+.bubble::before{content:"";position:absolute;left:-8px;top:50%;margin-top:-8px;border:8px solid transparent;border-right-color:#F2F3F5;border-left:0}
+.bubble .prog{margin-top:8px;background:#D5D9DE}
+.graph{position:relative;height:100px;border-radius:8px;overflow:hidden;background:#3B4048;cursor:pointer}
+.graph svg{position:absolute;inset:0;width:100%;height:100%}
+.gdot{position:absolute;width:10px;height:10px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 1.5px rgba(0,0,0,.4);pointer-events:none}
+.rsum{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;font-size:.95rem}
+.rtable{display:grid;grid-template-columns:minmax(0,1fr) 96px 32px 96px;align-items:center;row-gap:4px;column-gap:8px}
+.rl{font-weight:500;font-size:.95rem}
+.rl small{display:block;font-weight:400;font-size:.76rem;color:var(--muted)}
+.rp{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:.85rem;font-weight:600;text-align:center;padding:4px 0 8px}
+.rp .av{width:58px;height:58px;border-radius:8px}
+.rp.mine .av{box-shadow:0 0 0 3px var(--ok)}
+.box{border-radius:8px;padding:9px 0;text-align:center;font-weight:700;font-size:1.3rem;font-variant-numeric:tabular-nums}
+.box.w{background:#F2F3F5;color:#1B1F24}
+.box.b{background:#3A3F47;color:#fff}
+.hr{grid-column:1 / -1;height:1px;background:var(--line);margin:10px 0}
+.ic{display:grid;place-items:center}
+.ic .ci{width:26px;height:26px}
+.cnt{background:none;border:0;border-radius:8px;padding:5px 0;font-weight:700;font-size:1.3rem;cursor:pointer;font-variant-numeric:tabular-nums}
+.cnt:not(:disabled):hover{background:var(--s2)}
+.cnt:disabled{opacity:1;cursor:default}
+.rtable .cnt:disabled{opacity:.9}
+.adv-h{text-align:center;font-size:1.3rem;font-weight:600;margin:10px 0 0}
+.rtable.adv{row-gap:10px}
+.gc{display:flex;align-items:center;justify-content:center;gap:6px;font-weight:600;font-size:.95rem}
+.gc .ci{width:26px;height:26px}
+.sticky{position:fixed;left:0;right:0;bottom:0;padding:18px 16px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(21,24,29,0),var(--bg) 35%);z-index:10}
+.sticky .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr;gap:8px}
+.tin{background:var(--s2);border:0;border-radius:8px;color:var(--ink);font:inherit;padding:8px 12px;width:180px;max-width:55%}
+.tin:focus{outline:2px solid var(--accent)}
+@media (max-width:420px){.rtable{grid-template-columns:minmax(0,1fr) 78px 28px 78px;column-gap:6px}.rp .av{width:48px;height:48px}.box{font-size:1.15rem}}
 </style>
 </head>
 <body>
@@ -215,6 +304,7 @@ button.sq{cursor:pointer}
         <h1>หมากรุก</h1>
         <p class="sub">ฝึกเล่นคนเดียวกับคอมพิวเตอร์ และเรียนเทคนิคใหม่ทุกวัน</p>
         <div class="chips" style="margin-top:12px">
+          <span class="chip">♟ เรตติ้ง <b id="ratingTxt">800</b></span>
           <span class="chip">🪙 <b id="coinTxt">0</b> เหรียญ</span>
           <span class="chip">🔥 ล็อกอินต่อเนื่อง <b id="streakTxt">0</b> วัน</span>
         </div>
@@ -241,6 +331,8 @@ button.sq{cursor:pointer}
     <div><div class="lbl">ระดับความยาก</div>
       <div class="seg" id="levelSeg"><button data-v="0">ง่าย</button><button data-v="1">ปานกลาง</button><button data-v="2">ยาก</button></div>
       <p class="muted" id="levelDesc" style="margin:8px 0 0;font-size:.92rem"></p></div>
+    <div><div class="lbl">เวลาต่อฝ่าย</div>
+      <div class="seg" id="tcSeg"><button data-v="0">ไม่จับเวลา</button><button data-v="300">5 นาที</button><button data-v="600">10 นาที</button><button data-v="900">15 นาที</button></div></div>
     <p class="note plain">ระดับความยากจะถูกล็อกไว้ตลอดทั้งเกม ชนะได้เหรียญ ง่าย 15, ปานกลาง 30, ยาก 50</p>
     <button class="btn primary" id="startBtn" style="padding:14px;font-size:1.1rem">เริ่มเล่น</button>
   </div>
@@ -248,27 +340,28 @@ button.sq{cursor:pointer}
 
 <!-- GAME -->
 <section class="screen" id="scr-game" hidden>
-  <div class="bar">
-    <button class="back" data-go="menu">เมนู</button>
-    <div class="chips"><span class="chip" id="lvlChip"></span><span class="chip">🪙 <b id="coinTxt2">0</b></span></div>
+  <div class="bar"><button class="back" data-go="menu">เมนู</button>
+    <div class="chips"><span class="chip" id="lvlChip"></span><span class="chip">🪙 <b id="coinTxt2">0</b></span></div></div>
+  <div class="gwrap">
+    <div class="mstrip" id="moves" aria-label="บันทึกการเดิน"></div>
+    <div class="pbar" id="pbTop"></div>
+    <div class="boardbox"><div class="board" id="gameBoard" role="grid" aria-label="กระดานหมากรุก"></div></div>
+    <div class="pbar" id="pbBot"></div>
+    <div class="gnote" id="gNote" aria-live="polite"></div>
   </div>
-  <div class="game">
-    <section class="gcol">
-      <div class="topline"><div class="caps" id="capsTop"></div><span class="count" id="plyCount" aria-label="ตำแหน่ง"></span></div>
-      <div class="boardbox"><div class="board" id="gameBoard" role="grid" aria-label="กระดานหมากรุก"></div></div>
-      <div class="strip">
-        <button id="nPrev" aria-label="ย้อนหลังหนึ่งตา">◀</button>
-        <div class="mlist" id="moves" aria-label="บันทึกการเดิน"></div>
-        <button id="nNext" aria-label="ไปข้างหน้าหนึ่งตา">▶</button>
-      </div>
-      <div class="caps bottom" id="capsBottom"></div>
-    </section>
-    <aside class="panel">
-      <div class="status" id="status" aria-live="polite"></div>
-      <div id="reviewNote"></div>
-      <div class="actions" id="gameActions"></div>
-    </aside>
-  </div>
+  <nav class="toolbar"><div class="in">
+    <button class="tb" id="tOpt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.4" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.4" fill="currentColor" stroke="none"/></svg>ตัวเลือก</button>
+    <button class="tb star" id="tRev" aria-label="สรุปเกม"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 6.8l1.6 3.3 3.6.5-2.6 2.5.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.5 3.6-.5z" fill="currentColor"/></svg>สรุปเกม</button>
+    <button class="tb" id="nPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>ย้อน</button>
+    <button class="tb" id="nNext"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>ถัดไป</button>
+  </div></nav>
+</section>
+
+<!-- REVIEW -->
+<section class="screen" id="scr-review" hidden>
+  <div class="bar"><button class="back" id="rvBack">กลับไปกระดาน</button><h2 class="rv-title">สรุปเกม</h2><span class="rv-sp"></span></div>
+  <div class="rv" id="rvBody"></div>
+  <div class="sticky"><div class="in"><button class="btn primary" id="rvBoard">ทบทวนบนกระดาน</button><button class="btn" id="rvNew">เกมใหม่</button></div></div>
 </section>
 
 <!-- LESSON -->
@@ -305,6 +398,7 @@ button.sq{cursor:pointer}
   <div class="form" style="max-width:820px">
     <h2>ตั้งค่า</h2>
     <div class="card">
+      <div class="toggle"><label for="nameIn">ชื่อผู้เล่น</label><input id="nameIn" class="tin" maxlength="20" placeholder="คุณ" autocomplete="off"></div>
       <div class="toggle"><span>แสดงจุดบอกช่องที่เดินได้</span><button class="sw" role="switch" data-k="dots" aria-label="แสดงจุดบอกช่องที่เดินได้"></button></div>
       <div class="toggle"><span>แสดงพิกัดบนกระดาน</span><button class="sw" role="switch" data-k="coords" aria-label="แสดงพิกัดบนกระดาน"></button></div>
       <div class="toggle"><span>เสียงตอนเดินหมาก</span><button class="sw" role="switch" data-k="sound" aria-label="เสียงตอนเดินหมาก"></button></div>
@@ -321,7 +415,6 @@ button.sq{cursor:pointer}
   </div>
 </section>
 
-<div class="overlay" id="rModal" role="dialog" aria-modal="true" aria-label="สรุปผลเกม"><div class="dialog rdialog" id="rBox"></div></div>
 <div class="overlay" id="modal" role="dialog" aria-modal="true"><div class="dialog" id="modalBox"></div></div>
 <div class="toast" id="toast" role="status"></div>
 
@@ -561,15 +654,6 @@ const LEVELS=[
   {n:"ปานกลาง",d:"คอมพิวเตอร์คิดล่วงหน้า 2 ตา ไม่ปล่อยหมากให้กินง่าย ๆ"},
   {n:"ยาก",d:"คอมพิวเตอร์คิดล่วงหน้า 4 ตา ต้องวางแผนดี ๆ ถึงจะชนะ"}
 ];
-const CLS=[
-  {n:"ยอดเยี่ยม",e:"💎",c:"#2BA3C7"},
-  {n:"เยี่ยม",e:"🌟",c:"#3E9E5B"},
-  {n:"ดี",e:"👍",c:"#86A83C"},
-  {n:"ก้ำกึ่ง",e:"🤔",c:"#D8A93A"},
-  {n:"แย่",e:"😬",c:"#E07B39"},
-  {n:"ผิดพลาด",e:"💥",c:"#C8452F"}
-];
-const PHASES=[["open","ต้นเกม"],["mid","กลางเกม"],["end","ท้ายเกม"]];
 
 const LESSONS=[
 {t:"รุกจนแถวหลัง",fen:"6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - -",sol:["d1d8"],
@@ -686,7 +770,7 @@ function pieceHTML(p,ti){
 /* ---------- Storage ---------- */
 const STORE="chess-app-v2";
 const defaults=()=>({settings:{theme:0,dots:true,coords:true,sound:true},coins:0,owned:[0,1,2,3,4,5],
-  login:{last:null,streak:0},lesson:{done:null,solved:[]},stats:{w:0,l:0,d:0},game:null,newPrefs:{color:"w",level:1}});
+  login:{last:null,streak:0},lesson:{done:null,solved:[]},stats:{w:0,l:0,d:0},game:null,newPrefs:{color:"w",level:1,tc:900},rating:800,name:""});
 let DB=defaults();
 try{const r=localStorage.getItem(STORE);if(r){const d=JSON.parse(r);DB=Object.assign(defaults(),d);DB.settings=Object.assign(defaults().settings,d.settings||{})}}catch(e){}
 function save(){try{localStorage.setItem(STORE,JSON.stringify(DB))}catch(e){}}
@@ -731,7 +815,7 @@ function Board(host,interactive,onClick){
     const el=document.createElement(interactive?"button":"div");
     el.className="sq";
     if(interactive){el.type="button";el.setAttribute("role","gridcell");el.addEventListener("click",()=>onClick(this.flip?63-v:v))}
-    el.innerHTML='<span class="pcw"></span><span class="rk"></span><span class="fl"></span>';
+    el.innerHTML='<span class="pcw"></span><span class="rk"></span><span class="fl"></span><span class="bdg"></span>';
     host.appendChild(el);this.cells.push(el);
   }
 }
@@ -751,6 +835,8 @@ Board.prototype.draw=function(st,o){
     const coords=o.coords!==false&&DB.settings.coords;
     el.children[1].textContent=coords&&(v&7)===0?String(8-(sq>>3)):"";
     el.children[2].textContent=coords&&(v>>3)===7?FILES[sq&7]:"";
+    const bk=o.badge&&o.badge.sq===sq?o.badge.c:-1;
+    if(el._bk!==bk){el.children[3].innerHTML=bk>=0?clsIcon(bk):"";el._bk=bk}
     if(el.tagName==="BUTTON")el.setAttribute("aria-label",sqName(sq)+(p?" "+(colorOf(p)==="w"?"ขาว":"ดำ")+NAME[p.toLowerCase()]:" ว่าง"));
   }
 };
@@ -761,7 +847,8 @@ function show(name){
   screen=name;
   for(const s of document.querySelectorAll(".screen"))s.hidden=s.id!=="scr-"+name;
   try{window.scrollTo(0,0)}catch(e){}
-  ({menu:renderMenu,new:renderNew,game:renderGame,lesson:renderLesson,login:renderLogin,settings:renderSettings})[name]();
+  if(name==="game")startClock();else stopClock();
+  ({menu:renderMenu,new:renderNew,game:renderGame,review:renderReview,lesson:renderLesson,login:renderLogin,settings:renderSettings})[name]();
 }
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b)show(b.dataset.go)});
 
@@ -777,7 +864,7 @@ function renderMenu(){
   refreshCoins();
   heroBoard.draw(DB.game?(states.length?cur():initial()):initial(),{coords:false,last:DB.game&&moves.length?moves[moves.length-1]:null});
   const ls=loginState();
-  $("streakTxt").textContent=ls.streak;
+  $("streakTxt").textContent=ls.streak;$("ratingTxt").textContent=DB.rating||800;
   $("loginBadge").textContent=ls.claimed?"รับแล้ว":"รับรางวัล";
   $("loginBadge").className="badge"+(ls.claimed?" done":"");
   const li=todayLessonIdx(),done=DB.lesson.done===today();
@@ -792,7 +879,7 @@ function renderMenu(){
   }else c.hidden=true;
   const s=DB.stats;$("statsTxt").textContent=`สถิติของคุณ: ชนะ ${s.w} ครั้ง, แพ้ ${s.l} ครั้ง, เสมอ ${s.d} ครั้ง`;
 }
-$("mContinue").onclick=()=>{view=null;show("game");if(DB.game&&!DB.game.result)maybeAI();else{runAnalysis();openResult()}};
+$("mContinue").onclick=()=>{view=null;clsNav=null;if(DB.game&&!DB.game.result){show("game");maybeAI()}else{runAnalysis();show("review")}};
 $("mNew").onclick=()=>show("new");
 $("mLesson").onclick=()=>openLesson(todayLessonIdx());
 $("mLogin").onclick=()=>show("login");
@@ -803,10 +890,13 @@ function renderNew(){
   const p=DB.newPrefs;
   for(const b of document.querySelectorAll("#colorSeg button"))b.setAttribute("aria-pressed",String(b.dataset.v===p.color));
   for(const b of document.querySelectorAll("#levelSeg button"))b.setAttribute("aria-pressed",String(+b.dataset.v===p.level));
-  $("levelDesc").textContent=LEVELS[p.level].d;
+  $("levelDesc").textContent=LEVELS[p.level].d+` (เรตติ้ง ${BOT_RATING[p.level]})`;
+  const tc=p.tc===undefined?900:p.tc;
+  for(const b of document.querySelectorAll("#tcSeg button"))b.setAttribute("aria-pressed",String(+b.dataset.v===tc));
 }
 $("colorSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;DB.newPrefs.color=b.dataset.v;save();renderNew()};
 $("levelSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;DB.newPrefs.level=+b.dataset.v;save();renderNew()};
+$("tcSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;DB.newPrefs.tc=+b.dataset.v;save();renderNew()};
 $("startBtn").onclick=()=>{
   if(gameActive()&&moves.length){
     modal("มีเกมที่ยังเล่นไม่จบ","ถ้าเริ่มเกมใหม่ เกมเดิมจะนับเป็นการยอมแพ้",[
@@ -815,12 +905,41 @@ $("startBtn").onclick=()=>{
 };
 
 /* ---------- Game ---------- */
-let states=[],moves=[],view=null,sel=-1,targets=[],thinking=false,gameId=0,analyzing=false,anaDone=0,anaTotal=0,pendingPromo=false;
+const BOT_RATING=[600,1000,1400];
+const CLS=[
+  {n:"ยอดเยี่ยม",s:"!!",c:"#26C2A3"},
+  {n:"ดีมาก",s:"!",c:"#749BBF"},
+  {n:"ดีที่สุด",s:"star",c:"#81B64C"},
+  {n:"เยี่ยม",s:"thumb",c:"#96BC4B"},
+  {n:"ดี",s:"check",c:"#95B776"},
+  {n:"ตามตำรา",s:"book",c:"#D5A47D"},
+  {n:"ก้ำกึ่ง",s:"?!",c:"#F7C631"},
+  {n:"แย่",s:"?",c:"#FFA459"},
+  {n:"พลาดโอกาส",s:"miss",c:"#FF7769"},
+  {n:"ผิดพลาด",s:"??",c:"#FA412D"}
+];
+const NOTABLE=[0,1,6,7,8,9];
+function clsIcon(i,cls){
+  const c=CLS[i],s=c.s;let g;
+  if(s==="star")g='<path d="M12 4.6l2.2 4.5 5 .7-3.6 3.5.9 4.9-4.5-2.3-4.5 2.3.9-4.9-3.6-3.5 5-.7z" fill="#fff"/>';
+  else if(s==="thumb")g='<path d="M6.5 11h2.6v7.2H6.5z M10.3 18.2V11l2.9-4.8c1 0 1.7.9 1.5 1.8l-.5 2.4h3.3c1 0 1.7.9 1.4 1.8l-1.3 4.9c-.2.7-.8 1.1-1.5 1.1z" fill="#fff"/>';
+  else if(s==="check")g='<path d="M7 12.4l3.3 3.3L17.2 8.8" stroke="#fff" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
+  else if(s==="miss")g='<path d="M8.3 8.3l7.4 7.4M15.7 8.3l-7.4 7.4" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>';
+  else if(s==="book")g=`<path d="M5.8 7.6c2.1-.9 4.2-.8 6.2.5 2-1.3 4.1-1.4 6.2-.5v9.2c-2.1-.9-4.2-.8-6.2.5-2-1.3-4.1-1.4-6.2-.5z" fill="#fff"/><path d="M12 8.2v9" stroke="${c.c}" stroke-width="1.2"/>`;
+  else g=`<text x="12" y="16.6" text-anchor="middle" font-size="${s.length>1?11.5:13.5}" font-weight="800" fill="#fff" font-family="Arial,Helvetica,sans-serif">${s}</text>`;
+  return `<svg class="${cls||"ci"}" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="${c.c}"/>${g}</svg>`;
+}
+const FIG={K:"♔",Q:"♕",R:"♖",B:"♗",N:"♘"};
+const figSan=s=>s.replace(/^[KQRBN]/,x=>`<span class="fig">${FIG[x]}\uFE0E</span>`).replace(/=([QRBN])/,(m,x)=>`=<span class="fig">${FIG[x]}\uFE0E</span>`);
+const BOT_SVG='<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="8" y="12" width="24" height="19" rx="5" fill="#C9D1DA"/><circle cx="15.5" cy="21" r="3" fill="#15181D"/><circle cx="24.5" cy="21" r="3" fill="#15181D"/><rect x="15" y="26.5" width="10" height="2" rx="1" fill="#15181D"/><path d="M20 12V7" stroke="#C9D1DA" stroke-width="2"/><circle cx="20" cy="6" r="2.2" fill="#F4B942"/></svg>';
+
+let states=[],moves=[],view=null,sel=-1,targets=[],thinking=false,gameId=0,analyzing=false,anaDone=0,anaTotal=0,pendingPromo=false,flipped=false,clsNav=null;
 const cur=()=>states[states.length-1];
 const gameBoard=new Board($("gameBoard"),true,onGameSq);
 function loadGame(){
   states=[initial()];moves=[];
   if(!DB.game)return;
+  if(DB.game.analysis&&DB.game.analysis.v!==2)DB.game.analysis=null;
   for(const[f,t,pr]of DB.game.moves){
     const st=cur(),list=legal(st),m=list.find(x=>x.f===f&&x.t===t&&(x.pr||"")===pr);
     if(!m)break;
@@ -828,9 +947,9 @@ function loadGame(){
   }
 }
 function startGame(){
-  gameId++;thinking=false;analyzing=false;view=null;sel=-1;targets=[];
-  const c=DB.newPrefs.color,player=c==="r"?(Math.random()<.5?"w":"b"):c;
-  DB.game={player,level:DB.newPrefs.level,moves:[],result:null,analysis:null};
+  gameId++;stopClock();thinking=false;analyzing=false;view=null;sel=-1;targets=[];clsNav=null;flipped=false;
+  const c=DB.newPrefs.color,player=c==="r"?(Math.random()<.5?"w":"b"):c,tc=DB.newPrefs.tc===undefined?900:DB.newPrefs.tc;
+  DB.game={player,level:DB.newPrefs.level,tc,clock:tc?{w:tc*1000,b:tc*1000}:null,moves:[],result:null,analysis:null,rating:null};
   states=[initial()];moves=[];save();show("game");maybeAI();
 }
 function posOutcome(){
@@ -848,10 +967,15 @@ function posOutcome(){
 function finalize(o,silent){
   const g=DB.game;if(!g||g.result)return;
   const rw=o.code==="win"?WIN_REWARD[g.level]:o.code==="draw"?10:5;
-  g.result=Object.assign({reward:rw},o);
+  const r0=DB.rating||800,exp=1/(1+Math.pow(10,(BOT_RATING[g.level]-r0)/400)),sc=o.code==="win"?1:o.code==="draw"?.5:0;
+  DB.rating=Math.max(100,r0+Math.round(32*(sc-exp)));
+  g.result=Object.assign({reward:rw},o);g.rating={before:r0,after:DB.rating,delta:DB.rating-r0};
   DB.stats[o.code==="win"?"w":o.code==="draw"?"d":"l"]++;
   DB.coins+=rw;save();refreshCoins();
-  if(!silent){toast(`+${rw} 🪙 จากการเล่นจบเกม`);view=null;renderGame();runAnalysis();setTimeout(openResult,450)}
+  if(!silent){
+    toast(`+${rw} 🪙 จากการเล่นจบเกม`);view=null;sel=-1;targets=[];renderGame();runAnalysis();
+    setTimeout(()=>{if(DB.game===g&&screen==="game")show("review")},1100);
+  }
 }
 function play(m){
   const st=cur(),list=legal(st);
@@ -860,23 +984,23 @@ function play(m){
   DB.game.moves.push([m.f,m.t,m.pr||""]);
   sel=-1;targets=[];save();beep(m.cap);
   const o=posOutcome();
-  if(o){finalize(o)}else{renderGame();maybeAI()}
+  if(o)finalize(o);else{renderGame();maybeAI()}
 }
 function maybeAI(){
   if(!gameActive()||thinking||cur().t===DB.game.player)return;
   thinking=true;renderGame();
-  const id=gameId;
+  const id=gameId,delay=DB.game.tc?300+Math.random()*700:150;
   setTimeout(()=>{
-    if(id!==gameId){thinking=false;return}
+    if(id!==gameId||!gameActive()){thinking=false;return}
     const m=pickMove(cur(),DB.game.level);
     thinking=false;
     if(id!==gameId||!gameActive())return;
     if(m)play(m);else renderGame();
-  },120);
+  },delay);
 }
 function onGameSq(sq){
   if(!DB.game||pendingPromo)return;
-  if(view!==null){view=null;renderGame();return}
+  if(view!==null){view=null;clsNav=null;renderGame();return}
   if(!gameActive()||thinking)return;
   const st=cur();if(st.t!==DB.game.player)return;
   const hits=targets.filter(m=>m.t===sq);
@@ -897,183 +1021,318 @@ function askPromo(opts){
   }
   box.appendChild(row);modal.locked=true;$("modal").classList.add("show");row.firstChild.focus();
 }
+
+/* clocks */
+let clockTimer=null,lastTick=0,tickN=0;
+function startClock(){stopClock(true);lastTick=performance.now();clockTimer=setInterval(tickClock,200)}
+function stopClock(quiet){if(clockTimer){tickClock();clearInterval(clockTimer);clockTimer=null;if(!quiet)save()}}
+function tickClock(){
+  const now=performance.now(),dt=now-lastTick;lastTick=now;
+  const g=DB.game;if(!g||!g.clock||g.result)return;
+  const side=cur().t;
+  g.clock[side]=Math.max(0,g.clock[side]-dt);
+  if(g.clock[side]<=0){gameId++;thinking=false;finalize(side===g.player?{code:"loss",text:"หมดเวลา คอมพิวเตอร์ชนะ"}:{code:"win",text:"คอมพิวเตอร์หมดเวลา คุณชนะ"});return}
+  drawClocks();if(++tickN%10===0)save();
+}
+const fmtClock=ms=>{if(ms<20000){return `0:${String(Math.floor(ms/1000)).padStart(2,"0")}.${Math.floor(ms%1000/100)}`}
+  const s=Math.ceil(ms/1000);return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`};
+function drawClocks(){
+  const g=DB.game;if(!g||screen!=="game")return;
+  for(const el of document.querySelectorAll(".clock[data-c]")){
+    const c=el.dataset.c,ms=g.clock?g.clock[c]:0;
+    el.textContent=fmtClock(ms);
+    el.classList.toggle("on",!g.result&&cur().t===c);
+    el.classList.toggle("low",ms<30000);
+  }
+}
+
+/* view / nav */
 function setView(v){if(!DB.game)return;sel=-1;targets=[];view=(v===null||v>=moves.length)?null:Math.max(0,v);renderGame()}
-$("nPrev").onclick=()=>setView((view===null?moves.length:view)-1);
-$("nNext").onclick=()=>{if(view!==null)setView(view+1)};
+$("nPrev").onclick=()=>{clsNav=null;setView((view===null?moves.length:view)-1)};
+$("nNext").onclick=()=>{clsNav=null;if(view!==null)setView(view+1)};
+$("tRev").onclick=()=>{if(DB.game&&DB.game.result)show("review")};
+$("tOpt").onclick=openOptions;
 document.addEventListener("keydown",e=>{
-  if(screen!=="game"||$("modal").classList.contains("show")||$("rModal").classList.contains("show"))return;
+  if(screen!=="game"||$("modal").classList.contains("show"))return;
   if(e.key==="ArrowLeft"){e.preventDefault();$("nPrev").click()}
   if(e.key==="ArrowRight"){e.preventDefault();$("nNext").click()}
 });
+function openOptions(){
+  const g=DB.game,box=$("modalBox");
+  box.innerHTML='<h3>ตัวเลือก</h3>';
+  const list=document.createElement("div");list.className="olist";
+  const add=(label,fn,cls)=>{const b=document.createElement("button");b.className="btn"+(cls?" "+cls:"");b.textContent=label;b.onclick=()=>{closeModal();fn&&fn()};list.appendChild(b)};
+  add("พลิกกระดาน",()=>{flipped=!flipped;renderGame()});
+  if(gameActive())add("ยอมแพ้",()=>modal("ยอมแพ้เกมนี้?","เกมจะจบทันทีและนับเป็นแพ้",[{label:"เล่นต่อ"},{label:"ยอมแพ้",primary:true,fn:()=>{gameId++;thinking=false;finalize({code:"loss",text:"คุณยอมแพ้"})}}]),"danger");
+  else{add("สรุปเกม",()=>show("review"));add("เล่นเกมใหม่",()=>show("new"))}
+  add("กลับเมนูหลัก",()=>show("menu"));
+  add("ปิด");
+  box.appendChild(list);$("modal").classList.add("show");list.firstChild.focus();
+}
+
+function barHTML(c,st){
+  const g=DB.game,isMe=c===g.player,other=c==="w"?"b":"w";
+  const start={p:8,n:2,b:2,r:2,q:1},cnt={p:0,n:0,b:0,r:0,q:0};let mat={w:0,b:0};
+  for(const p of st.b)if(p&&p.toLowerCase()!=="k"){const t=p.toLowerCase();mat[colorOf(p)]+=VAL[t];if(colorOf(p)===other)cnt[t]++}
+  let caps="";for(const t of["q","r","b","n","p"]){const k=Math.max(0,start[t]-cnt[t]);caps+=`<span class="cp">${pieceHTML(other==="w"?t.toUpperCase():t)}</span>`.repeat(k)}
+  const adv=Math.round((mat[c]-mat[other])/100);
+  let rating,delta="";
+  if(isMe){if(g.rating){rating=g.rating.after;const d=g.rating.delta;delta=`<span class="delta ${d>=0?"up":"dn"}">${d>=0?"+":""}${d}</span>`}else rating=DB.rating||800}
+  else rating=BOT_RATING[g.level];
+  const name=isMe?(DB.name||"คุณ"):`คอมพิวเตอร์ ${LEVELS[g.level].n}`;
+  const think=!isMe&&thinking&&view===null?'<span class="thinking">กำลังคิด…</span>':"";
+  const av=isMe?`<div class="av me">${pieceHTML(c==="w"?"P":"p",0)}</div>`:`<div class="av">${BOT_SVG}</div>`;
+  return `${av}<div class="pinfo"><div class="pname">${name} <span class="r">(${rating})</span> ${delta}</div>
+    <div class="psub">${think||caps}${!think&&adv>0?`<span class="adv">+${adv}</span>`:""}</div></div>
+    ${g.clock?`<div class="clock" data-c="${c}"></div>`:""}`;
+}
 
 function renderGame(){
   if(screen!=="game")return;
   refreshCoins();
   const g=DB.game;if(!g){show("menu");return}
   const P=g.player,shown=view===null?moves.length:view,st=states[shown];
-  gameBoard.flip=P==="b";
-  gameBoard.draw(st,{sel,targets,last:shown?moves[shown-1]:null,check:inCheck(st)?kingSq(st.b,st.t):-1});
+  const A=g.analysis&&g.analysis.moves,lm=shown?moves[shown-1]:null;
+  gameBoard.flip=(P==="b")!==flipped;
+  gameBoard.draw(st,{sel,targets,last:lm,check:inCheck(st)?kingSq(st.b,st.t):-1,
+    badge:A&&lm&&A[shown-1]?{sq:lm.t,c:A[shown-1].c}:null});
   $("lvlChip").textContent=`ระดับ${LEVELS[g.level].n} 🔒`;
-  // status
-  const s=$("status");let txt,cls="";
-  $("plyCount").textContent=`${shown}/${moves.length}`;
-  {
-    if(g.result){txt=g.result.text;cls="done"}
-    else if(thinking)txt="คอมพิวเตอร์กำลังคิด…";
-    else if(cur().t===P){const c=inCheck(cur());txt=c?"คุณถูกรุก! ต้องแก้รุก":"ตาคุณเดิน";if(c)cls="alert"}
-    else txt="ตาคอมพิวเตอร์";
-    s.textContent=txt;
-  }
-  s.className="status "+cls;
-  // review buttons
-  $("nPrev").disabled=shown===0;
-  $("nNext").disabled=view===null;
-  // captured
-  const start={p:8,n:2,b:2,r:2,q:1},cnt={w:{p:0,n:0,b:0,r:0,q:0},b:{p:0,n:0,b:0,r:0,q:0}};
-  for(const p of st.b)if(p&&p.toLowerCase()!=="k")cnt[colorOf(p)][p.toLowerCase()]++;
-  const lost=c=>{let s="",m=0;for(const t of["q","r","b","n","p"]){const k=Math.max(0,start[t]-cnt[c][t]);s+=`<span class="cp">${pieceHTML(c==="w"?t.toUpperCase():t)}</span>`.repeat(k);m+=k*VAL[t]}return{s,m}};
-  const lw=lost("w"),lb=lost("b"),mine=P==="w"?lb:lw,theirs=P==="w"?lw:lb,diff=Math.round((mine.m-theirs.m)/100);
-  $("capsBottom").innerHTML=mine.s+(diff>0?`<span class="adv">+${diff}</span>`:"");
-  $("capsTop").innerHTML=theirs.s+(diff<0?`<span class="adv">+${-diff}</span>`:"");
-  // moves list (horizontal)
-  const A=g.analysis&&g.analysis.moves,mv=$("moves");
+  const topC=gameBoard.flip?"w":"b";
+  $("pbTop").innerHTML=barHTML(topC,st);$("pbBot").innerHTML=barHTML(topC==="w"?"b":"w",st);
+  drawClocks();
+  // move strip
+  const mv=$("moves");
   if(!moves.length)mv.innerHTML='<span class="empty">ยังไม่มีการเดิน</span>';
   else{
     let h="";
     for(let i=0;i<moves.length;i++){
       if(i%2===0)h+=`<span class="mn">${i/2+1}.</span>`;
       const a=A&&A[i];
-      h+=`<button data-ply="${i+1}" class="${shown===i+1?"on":""}">${moves[i].san}${a?" "+CLS[a.c].e:""}</button>`;
+      h+=`<button data-ply="${i+1}" class="${shown===i+1?"on":""}">${figSan(moves[i].san)}${a&&NOTABLE.includes(a.c)?clsIcon(a.c,"ci sm"):""}</button>`;
     }
+    if(g.result)h+=`<span class="mres">${g.result.code==="draw"?"½-½":(g.result.code==="win")===(P==="w")?"1-0":"0-1"}</span>`;
     mv.innerHTML=h;
     const on=mv.querySelector(".on");
     if(on){if(on.offsetLeft<mv.scrollLeft||on.offsetLeft+on.offsetWidth>mv.scrollLeft+mv.clientWidth)mv.scrollLeft=on.offsetLeft-mv.clientWidth/2+on.offsetWidth/2}
     else if(shown===0)mv.scrollLeft=0;
   }
-  // review note
-  const rn=$("reviewNote");rn.innerHTML="";
-  if(clsNav){const L=clsList(clsNav.c);if(L[clsNav.k]+1!==shown)clsNav=null}
-  if(A&&shown>0&&A[shown-1]){
-    const a=A[shown-1],c=CLS[a.c];
-    let h=`<div class="note">${c.e} <b>${moves[shown-1].san}</b> ${c.n}${a.best?`<br><span class="muted">ตาที่ดีกว่าคือ ${a.best}</span>`:""}`;
-    if(clsNav){const L=clsList(clsNav.c);h+=`<div class="navc"><button data-cn="-1">ก่อนหน้า</button><span class="muted">${c.n} ครั้งที่ ${clsNav.k+1} จาก ${L.length}</span><button data-cn="1">ถัดไป</button></div>`}
-    rn.innerHTML=h+"</div>";
-  }
-  // result + analysis
-  renderResult();
-  // actions
-  const act=$("gameActions");
-  if(g.result){act.innerHTML='<button class="btn primary" id="aSum">ดูสรุปผลเกม</button><button class="btn" id="aNew">เล่นเกมใหม่</button>';
-    $("aSum").onclick=openResult;$("aNew").onclick=()=>show("new")}
-  else{act.innerHTML='<button class="btn danger" id="aResign">ยอมแพ้</button><button class="btn" id="aMenu">พักไว้ก่อน</button>';
-    $("aResign").onclick=()=>modal("ยอมแพ้เกมนี้?","เกมจะจบทันทีและนับเป็นแพ้ จากนั้นจะแสดงการวิเคราะห์การเดินของคุณ",[
-      {label:"เล่นต่อ"},{label:"ยอมแพ้",primary:true,fn:()=>{gameId++;thinking=false;view=null;finalize({code:"loss",text:"คุณยอมแพ้"})}}]);
-    $("aMenu").onclick=()=>show("menu")}
+  // note
+  const nt=$("gNote");let h="",cls="gnote";
+  if(clsNav){const L=clsList(clsNav.c,clsNav.side);if(L[clsNav.k]+1!==shown)clsNav=null}
+  if(A&&lm&&A[shown-1]){
+    const a=A[shown-1],c=CLS[a.c],who=states[shown-1].t===P?"":"คอมพิวเตอร์: ";
+    h=`<div class="nrow">${clsIcon(a.c)}<div>${who}<b>${figSan(lm.san)}</b> ${c.n}${a.best?`<br><span class="muted">ตาที่ดีที่สุดคือ ${figSan(a.best)}</span>`:""}</div></div>`;
+    if(clsNav){const L=clsList(clsNav.c,clsNav.side);h+=`<div class="navc"><button data-cn="-1">ก่อนหน้า</button><span class="muted">${c.n} ${clsNav.k+1}/${L.length}</span><button data-cn="1">ถัดไป</button></div>`}
+  }else if(g.result){h=`<b>${g.result.text}</b><br><span class="muted">${g.analysis?"กด ★ เพื่อดูสรุปเกม":"กำลังวิเคราะห์เกม…"}</span>`;cls+=" done"}
+  else if(view!==null)h='<span class="muted">กำลังดูตาเดินย้อนหลัง แตะกระดานเพื่อกลับไปเล่นต่อ</span>';
+  else if(thinking)h='<span class="muted">คอมพิวเตอร์กำลังคิด…</span>';
+  else if(cur().t===P){const c=inCheck(cur());h=c?"คุณถูกรุก! ต้องแก้รุก":"ตาคุณเดิน";if(c)cls+=" alert"}
+  else h='<span class="muted">ตาคอมพิวเตอร์</span>';
+  nt.className=cls;nt.innerHTML=h;
+  $("nPrev").disabled=shown===0;$("nNext").disabled=view===null;
+  $("tRev").disabled=!g.result;
 }
 $("moves").addEventListener("click",e=>{const b=e.target.closest("[data-ply]");if(!b)return;clsNav=null;const p=+b.dataset.ply;setView(p===moves.length?null:p)});
-let clsNav=null;
-function clsList(c){const A=DB.game&&DB.game.analysis&&DB.game.analysis.moves;if(!A)return[];return Object.keys(A).map(Number).filter(i=>A[i].c===c).sort((a,b)=>a-b)}
-function jumpClass(c,k){
-  const L=clsList(c);if(!L.length)return;
+function clsList(c,side){const A=DB.game&&DB.game.analysis&&DB.game.analysis.moves;if(!A)return[];return Object.keys(A).map(Number).filter(i=>A[i].c===c&&A[i].side===side).sort((a,b)=>a-b)}
+function jumpClass(c,side,k){
+  const L=clsList(c,side);if(!L.length)return;
   k=((k||0)%L.length+L.length)%L.length;
-  closeResult();sel=-1;targets=[];
-  view=L[k]+1>=moves.length?null:L[k]+1;clsNav={c,k};
+  sel=-1;targets=[];view=L[k]+1>=moves.length?null:L[k]+1;clsNav={c,side,k};
   if(screen!=="game")show("game");else renderGame();
 }
 document.addEventListener("click",e=>{
-  const b=e.target.closest("[data-cls]");if(b&&!b.disabled){jumpClass(+b.dataset.cls,0);return}
-  const n=e.target.closest("[data-cn]");if(n&&clsNav){jumpClass(clsNav.c,clsNav.k+ +n.dataset.cn)}
+  const b=e.target.closest("[data-cls]");if(b&&!b.disabled){jumpClass(+b.dataset.cls,b.dataset.side,0);return}
+  const n=e.target.closest("[data-cn]");if(n&&clsNav){jumpClass(clsNav.c,clsNav.side,clsNav.k+ +n.dataset.cn)}
 });
 
-function anaHTML(full){
-  const g=DB.game;
-  if(!g.analysis){
-    const pct=anaTotal?Math.round(anaDone/anaTotal*100):0;
-    return `<div class="ana"><div class="ptxt">กำลังวิเคราะห์การเดินของคุณ ${anaDone}/${anaTotal||"…"}</div><div class="prog"><i class="pbar" style="width:${pct}%"></i></div></div>`;
-  }
-  if(g.analysis.none)return `<div class="ana"><div class="muted">เกมนี้คุณยังไม่ได้เดิน จึงไม่มีข้อมูลให้วิเคราะห์</div></div>`;
-  const S=g.analysis.sum;
-  let h=`<div class="ana"><div class="acc"><b>${S.acc.toFixed(1)}%</b><span>ความแม่นยำในการเดิน<br><span class="muted">จาก ${S.total} ตาที่คุณเดิน</span></span></div>`;
-  if(full){
-    h+=`<div><div class="lbl">คะแนนแต่ละช่วงของเกม (เต็ม 100)</div><div class="phases">`;
-    for(const[k,n]of PHASES){const p=S.ph[k];
-      h+=`<div class="phase"><div class="pn">${n}</div><div class="ps">${p.n?Math.round(p.acc):"–"}</div><div class="pv">${p.n?verdict(p.acc)+`, ${p.n} ตา`:"ไม่ถึงช่วงนี้"}</div></div>`}
-    h+=`</div></div>`;
-  }
-  h+=`<div><div class="lbl">ประเภทการเดิน (แตะเพื่อไปดูตานั้นบนกระดาน)</div><div class="clist">`;
-  CLS.forEach((c,i)=>{const n=S.counts[i];
-    h+=`<button class="citem" style="--c:${c.c}" data-cls="${i}" ${n?"":"disabled"} aria-label="${c.n} ${n} ครั้ง ไปดูบนกระดาน"><span class="ce">${c.e}</span><span class="cn">${c.n}</span><b>${n}</b></button>`});
-  return h+`</div></div></div>`;
-}
-function renderResult(){}
-function openResult(){
-  const g=DB.game;if(!g||!g.result)return;
-  renderResultModal();$("rModal").classList.add("show");
-  const f=$("rBox").querySelector(".btn.primary");if(f)f.focus();
-}
-function closeResult(){$("rModal").classList.remove("show")}
-function renderResultModal(){
-  const g=DB.game;if(!g||!g.result)return;
-  const r=g.result,icon=r.code==="win"?"🏆":r.code==="draw"?"🤝":"🏳️";
-  $("rBox").innerHTML=`<div class="result"><div class="big">${icon} ${r.text}</div><div class="rw">ระดับ${LEVELS[g.level].n}, ได้รับ ${r.reward} 🪙</div></div>`+anaHTML(true)+
-    `<div class="rbtns"><button class="btn primary" id="rAna">วิเคราะห์บนกระดาน</button><button class="btn" id="rNew">เล่นเกมใหม่</button><button class="btn" id="rMenu">เมนูหลัก</button></div>`;
-  $("rAna").onclick=()=>{
-    closeResult();clsNav=null;sel=-1;targets=[];
-    let first=0;for(let i=0;i<moves.length;i++)if(states[i].t===g.player){first=i+1;break}
-    view=first&&first<moves.length?first:null;
-    if(screen!=="game")show("game");else renderGame();
-  };
-  $("rNew").onclick=()=>{closeResult();show("new")};
-  $("rMenu").onclick=()=>{closeResult();show("menu")};
-}
-$("rModal").addEventListener("click",e=>{if(e.target.id==="rModal")closeResult()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeResult()});
-const verdict=a=>a>=90?"ยอดเยี่ยม":a>=78?"ดีมาก":a>=62?"พอใช้":"ต้องฝึกเพิ่ม";
-
 /* ---------- Analysis ---------- */
+const BOOK_LINES=`e2e4 e7e5 g1f3 b8c6 f1c4 f8c5 c2c3 g8f6 d2d3
+e2e4 e7e5 g1f3 b8c6 f1c4 g8f6 d2d3 f8c5
+e2e4 e7e5 g1f3 b8c6 f1b5 a7a6 b5a4 g8f6 e1g1 f8e7
+e2e4 e7e5 g1f3 b8c6 f1b5 g8f6 e1g1
+e2e4 e7e5 g1f3 b8c6 d2d4 e5d4 f3d4 g8f6
+e2e4 e7e5 g1f3 b8c6 b1c3 g8f6 f1b5
+e2e4 e7e5 g1f3 d7d6 d2d4 e5d4 f3d4
+e2e4 e7e5 g1f3 g8f6 f3e5 d7d6 e5f3 f6e4
+e2e4 e7e5 f2f4 e5f4 g1f3
+e2e4 e7e5 b1c3 g8f6 f2f4
+e2e4 e7e5 d2d4 e5d4 d1d4 b8c6
+e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 a7a6
+e2e4 c7c5 g1f3 b8c6 d2d4 c5d4 f3d4 g8f6 b1c3
+e2e4 c7c5 g1f3 e7e6 d2d4 c5d4 f3d4
+e2e4 c7c5 b1c3 b8c6 g2g3
+e2e4 c7c5 c2c3 g8f6 e4e5
+e2e4 e7e6 d2d4 d7d5 b1c3 g8f6 c1g5
+e2e4 e7e6 d2d4 d7d5 e4e5 c7c5 c2c3
+e2e4 c7c6 d2d4 d7d5 b1c3 d5e4 c3e4 c8f5
+e2e4 c7c6 d2d4 d7d5 e4e5 c8f5
+e2e4 d7d5 e4d5 d8d5 b1c3 d5a5
+e2e4 d7d5 e4d5 g8f6 d2d4
+e2e4 d7d6 d2d4 g8f6 b1c3 g7g6
+e2e4 g7g6 d2d4 f8g7 b1c3 d7d6
+e2e4 g8f6 e4e5 f6d5 d2d4 d7d6
+d2d4 d7d5 c2c4 e7e6 b1c3 g8f6 c1g5
+d2d4 d7d5 c2c4 c7c6 g1f3 g8f6 b1c3
+d2d4 d7d5 c2c4 d5c4 g1f3 g8f6 e2e3
+d2d4 d7d5 g1f3 g8f6 c1f4 e7e6 e2e3
+d2d4 d7d5 c1f4 g8f6 e2e3
+d2d4 g8f6 c2c4 e7e6 b1c3 f8b4 e2e3
+d2d4 g8f6 c2c4 e7e6 g1f3 b7b6 g2g3
+d2d4 g8f6 c2c4 g7g6 b1c3 f8g7 e2e4 d7d6 g1f3 e8g8
+d2d4 g8f6 c2c4 g7g6 b1c3 d7d5 c4d5 f6d5
+d2d4 g8f6 c2c4 c7c5 d4d5 e7e6
+d2d4 g8f6 c1f4 d7d5 e2e3
+d2d4 g8f6 g1f3 d7d5 e2e3
+d2d4 f7f5 g2g3 g8f6 f1g2
+c2c4 e7e5 b1c3 g8f6 g1f3 b8c6
+c2c4 g8f6 b1c3 e7e5
+c2c4 c7c5 g1f3 g8f6
+g1f3 d7d5 d2d4 g8f6 c2c4
+g1f3 g8f6 c2c4 g7g6 b1c3
+g1f3 d7d5 g2g3 g8f6 f1g2`;
+const bookKey=st=>st.b.join("")+st.t;
+const BOOK=(()=>{const S=new Set([bookKey(initial())]);let bad=0;
+  for(const line of BOOK_LINES.split("\n")){let st=initial();
+    for(const u of line.trim().split(/\s+/)){const m=legal(st).find(x=>sqName(x.f)+sqName(x.t)+(x.pr||"")===u);if(!m){bad++;break}st=make(st,m);S.add(bookKey(st))}}
+  return S})();
+
 function winPct(cp){cp=Math.max(-2000,Math.min(2000,cp));return 50+50*(2/(1+Math.exp(-.00368208*cp))-1)}
 function phaseOf(st){
   let npm=0;for(const p of st.b)if(p){const t=p.toLowerCase();if(t!=="p"&&t!=="k")npm+=VAL[t]}
   if(npm<=1800)return"end";return st.n<=10?"open":"mid";
+}
+const clampCp=v=>Math.max(-1500,Math.min(1500,v));
+function isSac(st,m,after){
+  const piece=after.b[m.t],pv=VAL[piece.toLowerCase()];if(pv<300)return false;
+  const caps=gen(after,true).filter(x=>{if(x.t!==m.t)return false;const s=make(after,x);return !attacked(s.b,kingSq(s.b,after.t),s.t)});
+  if(!caps.length)return false;
+  const minA=Math.min(...caps.map(x=>x.pc==="k"?9999:VAL[x.pc])),def=attacked(after.b,m.t,st.t);
+  if(def&&minA>=pv)return false;
+  return (def?pv-minA:pv)-(m.cap?VAL[m.cap]:0)>=200;
+}
+function onlyMove(st,ms,best,bv,D){
+  const thr=clampCp(bv)-150;
+  for(const m of ms){if(m===best)continue;const v=-negamax(make(st,m),D-1,-thr,-thr+1,1);if(v>=thr)return false}
+  return true;
 }
 function analyzePly(i,D){
   const st=states[i],mv=moves[i],ms=order(legal(st));
   let best=ms[0],bv=-INF;
   for(const m of ms){const v=-negamax(make(st,m),D-1,-INF,-bv,1);if(v>bv){bv=v;best=m}}
   const pm=ms.find(m=>m.f===mv.f&&m.t===mv.t&&(m.pr||"")===(mv.pr||""))||best;
-  const same=pm===best,pv=same?bv:-negamax(make(st,pm),D-1,-INF,INF,1);
-  const cl=v=>Math.max(-1500,Math.min(1500,v)),loss=same?0:Math.max(0,cl(bv)-cl(pv));
+  const same=pm===best,after=make(st,pm),pv=same?bv:-negamax(after,D-1,-INF,INF,1);
+  const loss=same?0:Math.max(0,clampCp(bv)-clampCp(pv));
   const drop=Math.max(0,winPct(bv)-winPct(pv));
-  const accW=103.1668*Math.exp(-.04354*drop)-3.1669,accC=100*Math.exp(-loss/250);
-  const acc=Math.max(0,Math.min(100,accW,accC));
-  const c=loss<=5?0:loss<=30?1:loss<=70?2:loss<=150?3:loss<=300?4:5;
-  return{c,acc:Math.round(acc*10)/10,ph:phaseOf(st),best:same?null:san(st,best,ms)};
+  let acc=Math.max(0,Math.min(100,103.1668*Math.exp(-.04354*drop)-3.1669,100*Math.exp(-loss/250)));
+  const book=BOOK.has(bookKey(after))&&BOOK.has(bookKey(st));
+  let c;
+  if(book){c=5;acc=100}
+  else if(loss<=5){
+    c=2;
+    if(ms.length>1&&clampCp(bv)<900&&clampCp(pv)>-150&&!inCheck(st)){
+      if(isSac(st,pm,after))c=0;
+      else if(!(i>0&&moves[i-1].cap&&pm.t===moves[i-1].t)&&onlyMove(st,ms,best,bv,D))c=1;
+    }
+  }
+  else if(loss<=20)c=3;else if(loss<=60)c=4;else if(loss<=150)c=6;
+  else if(clampCp(bv)>=200&&clampCp(pv)>=-50)c=8;
+  else if(loss<=300)c=7;else c=9;
+  const tac=!!(pm.cap||pm.pr||inCheck(after)||best.cap||best.pr||inCheck(make(st,best)));
+  const w=st.t==="w"?1:-1;
+  return{c,acc:Math.round(acc*10)/10,ph:phaseOf(st),tac,side:st.t,best:same?null:san(st,best,ms),ev:w*clampCp(pv),ev0:w*clampCp(bv)};
 }
+const estRating=a=>Math.max(100,Math.min(2800,Math.round(2700*Math.pow(a/100,2.6)/50)*50));
+const mean=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
 function summarize(res){
-  const counts=[0,0,0,0,0,0],ph={open:{n:0,s:0},mid:{n:0,s:0},end:{n:0,s:0}};let tot=0,n=0;
-  for(const k in res){const a=res[k];counts[a.c]++;ph[a.ph].n++;ph[a.ph].s+=a.acc;tot+=a.acc;n++}
-  for(const k in ph)ph[k].acc=ph[k].n?ph[k].s/ph[k].n:0;
-  return{counts,ph,acc:n?tot/n:0,total:n};
+  const mk=()=>({counts:Array(10).fill(0),accs:[],open:[],mid:[],end:[],tac:[],str:[]}),S={w:mk(),b:mk()};
+  for(const k in res){const a=res[k],s=S[a.side];s.counts[a.c]++;s.accs.push(a.acc);s[a.ph].push(a.acc);
+    if(a.c!==5){if(a.tac)s.tac.push(a.acc);else if(a.ph!=="end")s.str.push(a.acc)}}
+  for(const k of["w","b"]){const s=S[k];s.acc=mean(s.accs);s.rating=s.acc===null?null:estRating(s.acc);
+    for(const f of["open","mid","end","tac","str"])s[f]=mean(s[f]);delete s.accs}
+  return S;
 }
 function runAnalysis(){
   const g=DB.game;
   if(analyzing||!g||!g.result||g.analysis)return;
-  const idx=[];for(let i=0;i<moves.length;i++)if(states[i].t===g.player)idx.push(i);
-  if(!idx.length){g.analysis={none:true};save();renderGame();if($("rModal").classList.contains("show"))renderResultModal();return}
-  analyzing=true;anaDone=0;anaTotal=idx.length;
-  const res={},id=gameId,D=idx.length>45?2:3;let k=0;
-  renderGame();
+  if(!moves.length){g.analysis={v:2,none:true};save();renderGame();if(screen==="review")renderReview();return}
+  analyzing=true;anaDone=0;anaTotal=moves.length;
+  const res={},id=gameId,D=moves.length>90?2:3;let k=0;
   const step=()=>{
     if(id!==gameId||DB.game!==g){analyzing=false;return}
-    res[idx[k]]=analyzePly(idx[k],D);k++;anaDone=k;
-    if(k<idx.length){
-      for(const b of document.querySelectorAll(".pbar"))b.style.width=Math.round(k/idx.length*100)+"%";
-      for(const x of document.querySelectorAll(".ptxt"))x.textContent=`กำลังวิเคราะห์การเดินของคุณ ${k}/${idx.length}`;
-      setTimeout(step,0)}
-    else{g.analysis={moves:res,sum:summarize(res)};analyzing=false;save();renderGame();if($("rModal").classList.contains("show"))renderResultModal()}
+    res[k]=analyzePly(k,D);k++;anaDone=k;
+    if(k<moves.length){
+      for(const b of document.querySelectorAll(".pbar-i"))b.style.width=Math.round(k/moves.length*100)+"%";
+      for(const x of document.querySelectorAll(".ptxt"))x.textContent=`กำลังวิเคราะห์เกม ${k}/${moves.length}`;
+      setTimeout(step,0);
+    }else{g.analysis={v:2,moves:res,sum:summarize(res)};analyzing=false;save();renderGame();if(screen==="review")renderReview()}
   };
   setTimeout(step,40);
 }
+
+/* ---------- Review screen ---------- */
+const gradeOf=s=>s===null?null:s>=95?2:s>=85?3:s>=75?4:s>=60?6:s>=45?7:9;
+function coachText(g,S){
+  const P=g.player,me=S[P],r=g.result.code;
+  if(me.counts[0])return"คุณเจอตาแทคติกเด็ดในเกมนี้ มาทบทวนกัน!";
+  if(r==="win"&&me.acc>=80)return"เล่นได้แม่นยำมาก! มาดูกันว่าตาไหนที่ทำให้ชนะ";
+  if(r==="win")return"ชนะแล้ว! แต่ยังมีบางตาที่เล่นได้ดีกว่านี้ มาดูกัน";
+  if(me.counts[9]||me.counts[8])return"มีจังหวะสำคัญที่เปลี่ยนเกม ลองดูว่าเกิดขึ้นตรงไหน";
+  if(r==="draw")return"เกมสูสีมาก มาดูจุดที่ยังพัฒนาได้กัน";
+  return"มาทบทวนเกมนี้กัน ทุกเกมมีบทเรียนเสมอ";
+}
+function graphHTML(A){
+  const n=moves.length;if(!n)return"";
+  const pts=[[0,winPct(A[0].ev0)]];for(let i=0;i<n;i++)pts.push([i+1,winPct(A[i].ev)]);
+  const X=x=>(x/n*100).toFixed(2),Y=w=>(100-w).toFixed(2);
+  const d="M0 100 L"+pts.map(p=>X(p[0])+" "+Y(p[1])).join(" L")+" L100 100 Z";
+  let dots="";
+  for(let i=0;i<n;i++){const a=A[i];if(!NOTABLE.includes(a.c))continue;
+    dots+=`<span class="gdot" style="left:${X(i+1)}%;top:${Y(winPct(a.ev))}%;background:${CLS[a.c].c}"></span>`}
+  return `<div class="graph" id="evalGraph" title="แตะเพื่อไปยังตาเดินนั้น"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="${d}" fill="#EEF0F2"/><line x1="0" y1="50" x2="100" y2="50" stroke="#8D96A2" stroke-width=".6" vector-effect="non-scaling-stroke"/></svg>${dots}</div>`;
+}
+function renderReview(){
+  const g=DB.game,body=$("rvBody");
+  if(!g||!g.result){show("menu");return}
+  const r=g.result,A=g.analysis&&g.analysis.moves,S=g.analysis&&g.analysis.sum,P=g.player;
+  const icon=r.code==="win"?"🏆":r.code==="draw"?"🤝":"🏳️";
+  const who=c=>c===P?{n:DB.name||"คุณ",av:`<div class="av me">${pieceHTML(c==="w"?"P":"p",0)}</div>`}:{n:"คอมพิวเตอร์",av:`<div class="av">${BOT_SVG}</div>`};
+  const W=who("w"),B=who("b");
+  let h="";
+  if(!g.analysis){
+    const pct=anaTotal?Math.round(anaDone/anaTotal*100):0;
+    h+=`<div class="coach"><div class="cav">${pieceHTML("N",0)}</div><div class="bubble"><span class="ptxt">กำลังวิเคราะห์เกม ${anaDone}/${anaTotal||"…"}</span><div class="prog"><i class="pbar-i" style="width:${pct}%"></i></div></div></div>`;
+  }else if(g.analysis.none){
+    h+=`<div class="coach"><div class="cav">${pieceHTML("N",0)}</div><div class="bubble">เกมนี้ยังไม่มีการเดิน จึงไม่มีอะไรให้วิเคราะห์</div></div>`;
+  }else h+=`<div class="coach"><div class="cav">${pieceHTML("N",0)}</div><div class="bubble">${coachText(g,S)}</div></div>`+graphHTML(A);
+  const rd=g.rating;
+  h+=`<div class="rsum">${icon} <b>${r.text}</b><span class="muted">ได้ ${r.reward} 🪙${rd?`, เรตติ้ง ${rd.after} (${rd.delta>=0?"+":""}${rd.delta})`:""}</span></div>`;
+  const v=(c,f,fmt)=>S?fmt(S[c][f]):"–";
+  h+=`<div class="rtable">
+    <div class="rl">ผู้เล่น</div><div class="rp${P==="w"?" mine":""}">${W.av}<span>${W.n}</span></div><div></div><div class="rp${P==="b"?" mine":""}">${B.av}<span>${B.n}</span></div>
+    <div class="rl">ความแม่นยำ</div><div class="box w">${v("w","acc",x=>x===null?"–":x.toFixed(1))}</div><div></div><div class="box b">${v("b","acc",x=>x===null?"–":x.toFixed(1))}</div>
+    <div class="hr"></div>`;
+  CLS.forEach((c,i)=>{
+    const cell=side=>{const n=S?S[side].counts[i]:0;return `<button class="cnt" data-cls="${i}" data-side="${side}" style="color:${c.c}" ${S&&n?"":"disabled"} aria-label="${c.n} ${n} ครั้ง">${S?n:"–"}</button>`};
+    h+=`<div class="rl">${c.n}</div>${cell("w")}<div class="ic">${clsIcon(i)}</div>${cell("b")}`;
+  });
+  h+=`<div class="hr"></div>
+    <div class="rl">เรตติ้งเกมนี้<small>ประเมินจากความแม่นยำ</small></div><div class="box w">${v("w","rating",x=>x??"–")}</div><div></div><div class="box b">${v("b","rating",x=>x??"–")}</div>
+  </div>
+  <h3 class="adv-h">สถิติเพิ่มเติม</h3>
+  <div class="rtable adv">`;
+  for(const[f,n]of[["open","ต้นเกม"],["mid","กลางเกม"],["end","ท้ายเกม"],["tac","แทคติก"],["str","กลยุทธ์"]]){
+    const cell=side=>{if(!S)return'<div class="gc muted">–</div>';const s=S[side][f],gi=gradeOf(s);
+      return gi===null?'<div class="gc muted">ไม่ถึง</div>':`<div class="gc">${clsIcon(gi)}<span>${Math.round(s)}</span></div>`};
+    h+=`<div class="rl">${n}</div>${cell("w")}<div></div>${cell("b")}`;
+  }
+  h+=`</div><p class="muted" style="font-size:.84rem;margin:0">แตะตัวเลขในตารางเพื่อไปดูตาเดินประเภทนั้นบนกระดาน คะแนนสถิติเต็ม 100</p>`;
+  body.innerHTML=h;
+  const gr=$("evalGraph");
+  if(gr)gr.onclick=e=>{const rc=gr.getBoundingClientRect(),p=Math.round((e.clientX-rc.left)/rc.width*moves.length);clsNav=null;view=p>=moves.length?null:Math.max(0,p);show("game")};
+}
+$("rvBack").onclick=()=>show("game");
+$("rvBoard").onclick=()=>{clsNav=null;sel=-1;targets=[];view=moves.length>1?1:null;show("game")};
+$("rvNew").onclick=()=>show("new");
 
 /* ---------- Lessons ---------- */
 const todayLessonIdx=()=>((dayNum(today())%LESSONS.length)+LESSONS.length)%LESSONS.length;
@@ -1148,6 +1407,7 @@ $("claimBtn").onclick=()=>{
 function renderSettings(){
   refreshCoins();
   for(const b of document.querySelectorAll(".sw"))b.setAttribute("aria-checked",String(!!DB.settings[b.dataset.k]));
+  $("nameIn").value=DB.name||"";
   const locked=gameActive();
   $("themeCount").textContent=`${THEMES.length} ธีม แต่ละธีมมีสีกระดานและรูปทรงหมากของตัวเอง ปลดล็อกแล้ว ${DB.owned.length} ธีม`;
   $("themeLock").innerHTML=locked?'<div class="lockbar">มีเกมที่ยังเล่นไม่จบ เปลี่ยนธีมได้เมื่อเกมจบแล้ว (หรือกดยอมแพ้ในหน้าเกม)</div>':"";
@@ -1170,6 +1430,7 @@ function pickTheme(i){
   modal(`ปลดล็อกธีม "${THEMES[i][0]}"?`,`ใช้ ${price} 🪙 จากที่มีอยู่ ${DB.coins} 🪙`,[
     {label:"ยกเลิก"},{label:"ปลดล็อกและใช้เลย",primary:true,fn:()=>{DB.coins-=price;DB.owned.push(i);DB.settings.theme=i;save();applyTheme();renderSettings();toast("ปลดล็อกธีมใหม่แล้ว 🎨")}}]);
 }
+$("nameIn").oninput=e=>{DB.name=e.target.value.trim();save()};
 for(const b of document.querySelectorAll(".sw"))b.onclick=()=>{DB.settings[b.dataset.k]=!DB.settings[b.dataset.k];save();renderSettings()};
 $("resetAll").onclick=()=>modal("ล้างข้อมูลทั้งหมด?","เหรียญ ธีมที่ปลดล็อก สถิติ และเกมที่ค้างอยู่จะหายทั้งหมด",[
   {label:"ยกเลิก"},{label:"ล้างข้อมูล",primary:true,fn:()=>{gameId++;DB=defaults();save();applyTheme();loadGame();toast("ล้างข้อมูลแล้ว");show("menu")}}]);
