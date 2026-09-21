@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>หมากรุก — เล่นกับคอมพิวเตอร์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E8ECEF; --ink:#1E2A33; --muted:#5B6B77; --panel:#F5F7F8; --line:#CAD3D9;
+  --btn:#FFFFFF; --btn-ink:#1E2A33; --ui-dark:#2E3D4A;
+  --accent:#E0A036; --accent-soft:rgba(224,160,54,.42); --check:#C8452F; --ok:#3E9E5B;
+  --sq-light:#DAE2E7; --sq-dark:#6B8397; --frame:#2E3D4A;
+  --wp:#FBFBF7; --bp:#18212A; --wo:#1B242B; --bo:rgba(255,255,255,.5); --dot:rgba(20,30,40,.32);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#131A20;--ink:#E3E9ED;--muted:#91A1AC;--panel:#1B242C;--line:#2D3A45;--btn:#243039;--btn-ink:#E3E9ED;--ui-dark:#3D5264}
+}
+:root[data-theme="dark"]{--bg:#131A20;--ink:#E3E9ED;--muted:#91A1AC;--panel:#1B242C;--line:#2D3A45;--btn:#243039;--btn-ink:#E3E9ED;--ui-dark:#3D5264}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"IBM Plex Sans Thai",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.screen{max-width:960px;margin:0 auto;padding:16px 16px 40px}
+.screen[hidden]{display:none}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.back{border:1px solid var(--line);background:var(--btn);color:var(--btn-ink);border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:600}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:.92rem;white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+h1{font-size:clamp(2.4rem,7vw,3.6rem);line-height:1;margin:0;font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.6rem;line-height:1.2;margin:0}
+.sub{margin:6px 0 0;color:var(--muted)}
+.muted{color:var(--muted)}
+
+/* board */
+.boardbox{container-type:inline-size;width:100%}
+.board{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1/1;width:100%;border-radius:4px;overflow:hidden;
+  box-shadow:0 0 0 8px var(--frame),0 14px 30px -12px rgba(10,20,30,.45);user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.sq{position:relative;border:0;padding:0;margin:0;display:grid;place-items:center;background:var(--sq-light);outline:none}
+button.sq{cursor:pointer}
+.sq.dark{background:var(--sq-dark)}
+.sq.last::before{content:"";position:absolute;inset:0;background:var(--accent-soft)}
+.sq.sel::before{content:"";position:absolute;inset:0;background:var(--accent-soft);box-shadow:inset 0 0 0 4px var(--accent)}
+.sq.hint::before{content:"";position:absolute;inset:0;box-shadow:inset 0 0 0 5px var(--ok);background:rgba(62,158,91,.25)}
+.sq.check{background-image:radial-gradient(circle,var(--check) 0%,rgba(200,69,47,.55) 45%,transparent 72%)}
+.sq.target::after{content:"";position:absolute;width:30%;height:30%;border-radius:50%;background:var(--dot);pointer-events:none}
+.sq.target.cap::after{width:88%;height:88%;background:transparent;box-shadow:inset 0 0 0 5px var(--dot)}
+.sq:focus-visible{box-shadow:inset 0 0 0 3px var(--accent);z-index:2}
+.pc{position:relative;z-index:1;font-size:9.6cqw;line-height:1;
+  font-family:"Segoe UI Symbol","Noto Sans Symbols 2","DejaVu Sans","Apple Symbols",serif;font-variant-emoji:text;pointer-events:none;transform:translateY(-2%)}
+.pc.w{color:var(--wp);text-shadow:1px 0 0 var(--wo),-1px 0 0 var(--wo),0 1px 0 var(--wo),0 -1px 0 var(--wo),0 2px 3px rgba(0,0,0,.35)}
+.pc.b{color:var(--bp);text-shadow:1px 0 0 var(--bo),-1px 0 0 var(--bo),0 1px 0 var(--bo),0 -1px 0 var(--bo),0 2px 3px rgba(0,0,0,.3)}
+.rk,.fl{position:absolute;font-size:2.2cqw;font-weight:600;line-height:1;pointer-events:none;z-index:1}
+.rk{top:5%;left:6%}.fl{bottom:5%;right:7%}
+.sq.light .rk,.sq.light .fl{color:var(--sq-dark)}
+.sq.dark .rk,.sq.dark .fl{color:var(--sq-light)}
+@media (prefers-reduced-motion: no-preference){.sq .pc{transition:transform .12s ease}.sq.sel .pc{transform:translateY(-6%) scale(1.06)}}
+
+/* menu */
+.menu{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:36px;align-items:center;min-height:calc(100vh - 80px)}
+.menu-board{max-width:440px;width:100%;justify-self:center;transform:rotate(-3deg)}
+.menu-head{margin-bottom:22px}
+.menu-list{display:flex;flex-direction:column;gap:10px}
+.mbtn{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;border:1px solid var(--line);background:var(--btn);color:var(--btn-ink);
+  border-radius:10px;padding:13px 16px;font-size:1.08rem;font-weight:600;cursor:pointer}
+.mbtn small{display:block;font-weight:400;font-size:.85rem;color:var(--muted)}
+.mbtn.primary{background:var(--accent);border-color:var(--accent);color:#1E2A33}
+.mbtn.primary small{color:#3A3322}
+.badge{font-size:.78rem;font-weight:600;padding:2px 10px;border-radius:999px;background:var(--check);color:#fff;white-space:nowrap}
+.badge.done{background:var(--ok)}
+.stats{margin-top:16px;color:var(--muted);font-size:.92rem}
+@media (max-width:760px){.menu{grid-template-columns:1fr;gap:24px;min-height:0}.menu-board{max-width:300px;margin-top:10px}}
+
+/* game */
+.game{display:grid;grid-template-columns:minmax(0,580px) minmax(0,320px);gap:28px;justify-content:center;align-items:start}
+@media (max-width:880px){.game{grid-template-columns:minmax(0,580px);gap:18px}}
+.caps{min-height:30px;display:flex;flex-wrap:wrap;gap:0 2px;align-items:center;font-size:22px;color:var(--muted);
+  font-family:"Segoe UI Symbol","Noto Sans Symbols 2","DejaVu Sans",serif;padding:6px 2px}
+.caps.top{margin-bottom:8px}.caps.bottom{margin-top:8px}
+.caps .adv{font-family:"IBM Plex Sans Thai",sans-serif;font-size:13px;font-weight:600;margin-left:6px}
+.panel{display:flex;flex-direction:column;gap:14px}
+.status{font-size:1.1rem;font-weight:600;padding:12px 14px;border-radius:8px;background:var(--panel);border-left:5px solid var(--sq-dark);min-height:50px}
+.status.alert{border-left-color:var(--check)}
+.status.done{border-left-color:var(--accent)}
+.status.review{border-left-color:var(--ok)}
+.status small{display:block;font-weight:400;font-size:.9rem;color:var(--muted);margin-top:2px}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.nav button{border:1px solid var(--line);background:var(--btn);color:var(--btn-ink);border-radius:8px;padding:8px 0;cursor:pointer;font-size:1.05rem}
+.moves{background:var(--panel);border-radius:8px;padding:6px 4px;max-height:220px;overflow-y:auto;font-size:.95rem}
+.moves .row{display:grid;grid-template-columns:2.4em 1fr 1fr;padding:1px 6px}
+.moves .row:nth-child(even){background:rgba(120,140,155,.09)}
+.moves .no{color:var(--muted);padding:2px 0}
+.moves button{border:0;background:none;text-align:left;padding:2px 6px;border-radius:5px;cursor:pointer;color:var(--ink)}
+.moves button.on{background:var(--accent);color:#1E2A33}
+.moves .empty{padding:6px 10px;color:var(--muted)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn{font-size:1rem;font-weight:600;padding:10px;border-radius:8px;cursor:pointer;border:1px solid var(--line);background:var(--btn);color:var(--btn-ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#1E2A33}
+.btn.danger{color:var(--check)}
+.lbl{font-size:.88rem;color:var(--muted);font-weight:500;margin-bottom:4px}
+.note{font-size:.92rem;padding:10px 12px;border-radius:8px;background:var(--panel)}
+
+/* analysis */
+.result{padding:16px;border-radius:10px;background:var(--ui-dark);color:#fff}
+.result .big{font-size:1.5rem;font-weight:700;line-height:1.25}
+.result .rw{margin-top:4px;opacity:.85}
+.ana{background:var(--panel);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:14px}
+.acc{display:flex;align-items:baseline;gap:10px}
+.acc b{font-size:2.4rem;line-height:1;font-weight:700}
+.phases{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.phase{border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center}
+.phase .pn{font-size:.82rem;color:var(--muted)}
+.phase .ps{font-size:1.5rem;font-weight:700;line-height:1.2}
+.phase .pv{font-size:.78rem;color:var(--muted)}
+.clist{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.citem{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;background:var(--btn);border-left:4px solid var(--c)}
+.citem .ce{font-size:1.2rem}
+.citem .cn{flex:1}
+.citem b{font-size:1.1rem}
+.prog{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);width:0}
+
+/* forms */
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;border-right:1px solid var(--line);background:var(--btn);color:var(--btn-ink);padding:10px 6px;cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--ui-dark);color:#fff;font-weight:600}
+.form{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.card{background:var(--panel);border-radius:10px;padding:16px}
+
+/* login */
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.day{border:1px solid var(--line);border-radius:10px;padding:10px 4px;text-align:center;background:var(--btn)}
+.day .dn{font-size:.8rem;color:var(--muted)}
+.day .dc{font-size:1.4rem;line-height:1.3}
+.day .dv{font-weight:700}
+.day.got{background:var(--ui-dark);color:#fff;border-color:var(--ui-dark)}
+.day.got .dn{color:#C9D3DA}
+.day.now{border:2px solid var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+@media (max-width:520px){.days{grid-template-columns:repeat(4,1fr)}}
+
+/* lesson */
+.lesson{display:grid;grid-template-columns:minmax(0,480px) minmax(0,360px);gap:28px;justify-content:center;align-items:start}
+@media (max-width:880px){.lesson{grid-template-columns:minmax(0,480px)}}
+.goal{font-weight:600;padding:10px 12px;border-radius:8px;background:var(--panel);border-left:5px solid var(--accent)}
+.fb{padding:12px 14px;border-radius:8px}
+.fb.good{background:rgba(62,158,91,.14);border-left:5px solid var(--ok)}
+.fb.bad{background:rgba(200,69,47,.12);border-left:5px solid var(--check)}
+
+/* settings */
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.toggle:last-child{border-bottom:0}
+.sw{width:48px;height:28px;border-radius:99px;border:0;background:var(--line);position:relative;cursor:pointer;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .15s}
+.sw[aria-checked="true"]{background:var(--ok)}
+.sw[aria-checked="true"]::after{left:23px}
+.themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px}
+.th{border:1px solid var(--line);border-radius:10px;background:var(--btn);padding:8px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:6px}
+.th.on{border:2px solid var(--accent);padding:7px}
+.sw4{display:grid;grid-template-columns:repeat(4,1fr);aspect-ratio:2/1;border-radius:5px;overflow:hidden}
+.sw4 span{display:grid;place-items:center;font-size:22px;line-height:1;font-family:"Segoe UI Symbol","Noto Sans Symbols 2","DejaVu Sans",serif}
+.th .tn{font-weight:600;font-size:.92rem;line-height:1.3}
+.th .tp{font-size:.8rem;color:var(--muted)}
+.lockbar{padding:10px 12px;border-radius:8px;background:rgba(200,69,47,.12);border-left:5px solid var(--check);margin-bottom:12px}
+
+/* modal & toast */
+.overlay{position:fixed;inset:0;background:rgba(10,16,22,.55);display:none;place-items:center;z-index:20;padding:16px}
+.overlay.show{display:grid}
+.dialog{background:var(--panel);color:var(--ink);border-radius:12px;padding:18px;max-width:380px;width:100%}
+.dialog h3{margin:0 0 6px;font-size:1.2rem}
+.dialog p{margin:0 0 14px;color:var(--muted)}
+.dialog .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.popts{display:flex;gap:8px;justify-content:center}
+.popts button{width:64px;height:64px;border-radius:8px;border:1px solid var(--line);background:var(--sq-light);cursor:pointer;display:grid;place-items:center}
+.popts .pc{font-size:44px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);opacity:0;
+  background:var(--ui-dark);color:#fff;padding:10px 18px;border-radius:999px;font-weight:600;pointer-events:none;transition:opacity .2s,transform .2s;z-index:30;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- MENU -->
+<section class="screen" id="scr-menu">
+  <div class="menu">
+    <div class="boardbox menu-board"><div class="board" id="heroBoard" aria-hidden="true"></div></div>
+    <div>
+      <div class="menu-head">
+        <h1>หมากรุก</h1>
+        <p class="sub">ฝึกเล่นคนเดียวกับคอมพิวเตอร์ และเรียนเทคนิคใหม่ทุกวัน</p>
+        <div class="chips" style="margin-top:12px">
+          <span class="chip">🪙 <b id="coinTxt">0</b> เหรียญ</span>
+          <span class="chip">🔥 ล็อกอินต่อเนื่อง <b id="streakTxt">0</b> วัน</span>
+        </div>
+      </div>
+      <nav class="menu-list">
+        <button class="mbtn primary" id="mContinue"><span>เล่นต่อ<small id="contInfo"></small></span></button>
+        <button class="mbtn" id="mNew"><span>เริ่มเกมใหม่<small>เลือกสีและระดับความยาก</small></span></button>
+        <button class="mbtn" id="mLesson"><span>บทเรียนประจำวัน<small id="lessonInfo"></small></span><span class="badge" id="lessonBadge"></span></button>
+        <button class="mbtn" id="mLogin"><span>ล็อกอินรายวัน<small>รับเหรียญทุกวัน ไว้ปลดล็อกธีม</small></span><span class="badge" id="loginBadge"></span></button>
+        <button class="mbtn" id="mSettings"><span>ตั้งค่า<small>ธีมกระดาน เสียง และการแสดงผล</small></span></button>
+      </nav>
+      <p class="stats" id="statsTxt"></p>
+    </div>
+  </div>
+</section>
+
+<!-- NEW GAME -->
+<section class="screen" id="scr-new" hidden>
+  <div class="bar"><button class="back" data-go="menu">กลับเมนู</button></div>
+  <div class="form">
+    <h2>เริ่มเกมใหม่</h2>
+    <div><div class="lbl">สีของคุณ</div>
+      <div class="seg" id="colorSeg"><button data-v="w">ขาว (เดินก่อน)</button><button data-v="b">ดำ</button><button data-v="r">สุ่ม</button></div></div>
+    <div><div class="lbl">ระดับความยาก</div>
+      <div class="seg" id="levelSeg"><button data-v="0">ง่าย</button><button data-v="1">ปานกลาง</button><button data-v="2">ยาก</button></div>
+      <p class="muted" id="levelDesc" style="margin:8px 0 0;font-size:.92rem"></p></div>
+    <p class="note">ระดับความยากจะถูกล็อกไว้ตลอดทั้งเกม ชนะได้เหรียญ ง่าย 15, ปานกลาง 30, ยาก 50</p>
+    <button class="btn primary" id="startBtn" style="padding:14px;font-size:1.1rem">เริ่มเล่น</button>
+  </div>
+</section>
+
+<!-- GAME -->
+<section class="screen" id="scr-game" hidden>
+  <div class="bar">
+    <button class="back" data-go="menu">เมนู</button>
+    <div class="chips"><span class="chip" id="lvlChip"></span><span class="chip">🪙 <b id="coinTxt2">0</b></span></div>
+  </div>
+  <div class="game">
+    <section>
+      <div class="caps top" id="capsTop"></div>
+      <div class="boardbox"><div class="board" id="gameBoard" role="grid" aria-label="กระดานหมากรุก"></div></div>
+      <div class="caps bottom" id="capsBottom"></div>
+    </section>
+    <aside class="panel">
+      <div class="status" id="status" aria-live="polite"></div>
+      <div id="resultBox"></div>
+      <div>
+        <div class="lbl">ดูการเดินย้อนหลัง</div>
+        <div class="nav">
+          <button id="nFirst" aria-label="ไปตำแหน่งเริ่มต้น">⏮</button>
+          <button id="nPrev" aria-label="ย้อนหนึ่งตา">◀</button>
+          <button id="nNext" aria-label="ไปข้างหน้าหนึ่งตา">▶</button>
+          <button id="nLast" aria-label="กลับตำแหน่งล่าสุด">⏭</button>
+        </div>
+      </div>
+      <div id="reviewNote"></div>
+      <div><div class="lbl">บันทึกการเดิน</div><div class="moves" id="moves"></div></div>
+      <div class="actions" id="gameActions"></div>
+    </aside>
+  </div>
+</section>
+
+<!-- LESSON -->
+<section class="screen" id="scr-lesson" hidden>
+  <div class="bar"><button class="back" data-go="menu">กลับเมนู</button><span class="chip" id="lessonChip"></span></div>
+  <div class="lesson">
+    <div class="boardbox"><div class="board" id="lessonBoard" role="grid" aria-label="กระดานบทเรียน"></div></div>
+    <div class="panel">
+      <div><div class="lbl" id="lessonNo"></div><h2 id="lessonTitle"></h2></div>
+      <p id="lessonTip" style="margin:0"></p>
+      <div class="goal" id="lessonGoal"></div>
+      <div id="lessonFb"></div>
+      <div class="actions"><button class="btn" id="lHint">ขอคำใบ้</button><button class="btn" id="lReset">เริ่มโจทย์ใหม่</button></div>
+      <div class="actions"><button class="btn" id="lPrev">บทก่อนหน้า</button><button class="btn" id="lNext">บทถัดไป</button></div>
+      <p class="muted" id="lessonReward" style="margin:0;font-size:.92rem"></p>
+    </div>
+  </div>
+</section>
+
+<!-- LOGIN -->
+<section class="screen" id="scr-login" hidden>
+  <div class="bar"><button class="back" data-go="menu">กลับเมนู</button><span class="chip">🪙 <b id="coinTxt3">0</b></span></div>
+  <div class="form" style="max-width:640px">
+    <div><h2>ล็อกอินรายวัน</h2><p class="sub">เข้ามารับรางวัลทุกวันติดต่อกัน รางวัลจะเพิ่มขึ้นเรื่อย ๆ จนถึงวันที่ 7 ถ้าขาดไปหนึ่งวันจะเริ่มนับวันที่ 1 ใหม่</p></div>
+    <div class="days" id="days"></div>
+    <button class="btn primary" id="claimBtn" style="padding:14px;font-size:1.1rem"></button>
+    <p class="muted" id="loginInfo" style="margin:0;text-align:center"></p>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section class="screen" id="scr-settings" hidden>
+  <div class="bar"><button class="back" data-go="menu">กลับเมนู</button><span class="chip">🪙 <b id="coinTxt4">0</b></span></div>
+  <div class="form" style="max-width:820px">
+    <h2>ตั้งค่า</h2>
+    <div class="card">
+      <div class="toggle"><span>แสดงจุดบอกช่องที่เดินได้</span><button class="sw" role="switch" data-k="dots" aria-label="แสดงจุดบอกช่องที่เดินได้"></button></div>
+      <div class="toggle"><span>แสดงพิกัดบนกระดาน</span><button class="sw" role="switch" data-k="coords" aria-label="แสดงพิกัดบนกระดาน"></button></div>
+      <div class="toggle"><span>เสียงตอนเดินหมาก</span><button class="sw" role="switch" data-k="sound" aria-label="เสียงตอนเดินหมาก"></button></div>
+    </div>
+    <div>
+      <h2 style="font-size:1.3rem;margin-bottom:4px">ธีมกระดาน</h2>
+      <p class="muted" style="margin:0 0 12px" id="themeCount"></p>
+      <div id="themeLock"></div>
+      <div class="themes" id="themes"></div>
+    </div>
+    <div class="card">
+      <div class="toggle"><span>ล้างข้อมูลทั้งหมด (เหรียญ ธีม สถิติ และเกมที่ค้างอยู่)</span><button class="btn danger" id="resetAll">ล้างข้อมูล</button></div>
+    </div>
+  </div>
+</section>
+
+<div class="overlay" id="modal" role="dialog" aria-modal="true"><div class="dialog" id="modalBox"></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+"use strict";
+
+const VS="\uFE0E";
+const GLYPH={k:"♚",q:"♛",r:"♜",b:"♝",n:"♞",p:"♟"};
+const NAME={k:"คิง",q:"ควีน",r:"เรือ",b:"บิชอป",n:"ม้า",p:"เบี้ย"};
+const VAL={p:100,n:320,b:330,r:500,q:900,k:0};
+const FILES="abcdefgh";
+const KN=[[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+const KG=[[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+const DIAG=[[-1,-1],[-1,1],[1,-1],[1,1]];
+const ORTH=[[-1,0],[1,0],[0,-1],[0,1]];
+const INF=1e9, MATE=100000;
+
+const PST={
+p:[0,0,0,0,0,0,0,0,50,50,50,50,50,50,50,50,10,10,20,30,30,20,10,10,5,5,10,25,25,10,5,5,0,0,0,20,20,0,0,0,5,-5,-10,0,0,-10,-5,5,5,10,10,-20,-20,10,10,5,0,0,0,0,0,0,0,0],
+n:[-50,-40,-30,-30,-30,-30,-40,-50,-40,-20,0,0,0,0,-20,-40,-30,0,10,15,15,10,0,-30,-30,5,15,20,20,15,5,-30,-30,0,15,20,20,15,0,-30,-30,5,10,15,15,10,5,-30,-40,-20,0,5,5,0,-20,-40,-50,-40,-30,-30,-30,-30,-40,-50],
+b:[-20,-10,-10,-10,-10,-10,-10,-20,-10,0,0,0,0,0,0,-10,-10,0,5,10,10,5,0,-10,-10,5,5,10,10,5,5,-10,-10,0,10,10,10,10,0,-10,-10,10,10,10,10,10,10,-10,-10,5,0,0,0,0,5,-10,-20,-10,-10,-10,-10,-10,-10,-20],
+r:[0,0,0,0,0,0,0,0,5,10,10,10,10,10,10,5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,0,0,0,5,5,0,0,0],
+q:[-20,-10,-10,-5,-5,-10,-10,-20,-10,0,0,0,0,0,0,-10,-10,0,5,5,5,5,0,-10,-5,0,5,5,5,5,0,-5,0,0,5,5,5,5,0,-5,-10,5,5,5,5,5,0,-10,-10,0,5,0,0,0,0,-10,-20,-10,-10,-5,-5,-10,-10,-20],
+k:[-30,-40,-40,-50,-50,-40,-40,-30,-30,-40,-40,-50,-50,-40,-40,-30,-30,-40,-40,-50,-50,-40,-40,-30,-30,-40,-40,-50,-50,-40,-40,-30,-20,-30,-30,-40,-40,-30,-30,-20,-10,-20,-20,-20,-20,-20,-20,-10,20,20,0,0,0,0,20,20,20,30,10,0,0,10,30,20]
+};
+
+const colorOf=p=>p?(p===p.toUpperCase()?"w":"b"):null;
+const other=c=>c==="w"?"b":"w";
+const sqName=i=>FILES[i&7]+(8-(i>>3));
+
+function initial(){
+  const rows=["rnbqkbnr","pppppppp","........","........","........","........","PPPPPPPP","RNBQKBNR"];
+  const b=[];for(const r of rows)for(const ch of r)b.push(ch==="."?"":ch);
+  return {b,t:"w",c:"KQkq",ep:-1,h:0,n:1};
+}
+function kingSq(b,col){const k=col==="w"?"K":"k";for(let i=0;i<64;i++)if(b[i]===k)return i;return -1}
+
+function attacked(b,sq,by){
+  const r=sq>>3,c=sq&7,W=by==="w";
+  const P=W?"P":"p",N=W?"N":"n",B=W?"B":"b",R=W?"R":"r",Q=W?"Q":"q",K=W?"K":"k";
+  const pr=W?r+1:r-1;
+  if(pr>=0&&pr<8){for(const dc of[-1,1]){const cc=c+dc;if(cc>=0&&cc<8&&b[pr*8+cc]===P)return true}}
+  for(const[dr,dc]of KN){const rr=r+dr,cc=c+dc;if(rr>=0&&rr<8&&cc>=0&&cc<8&&b[rr*8+cc]===N)return true}
+  for(const[dr,dc]of KG){const rr=r+dr,cc=c+dc;if(rr>=0&&rr<8&&cc>=0&&cc<8&&b[rr*8+cc]===K)return true}
+  for(const[dr,dc]of DIAG){let rr=r+dr,cc=c+dc;while(rr>=0&&rr<8&&cc>=0&&cc<8){const x=b[rr*8+cc];if(x){if(x===B||x===Q)return true;break}rr+=dr;cc+=dc}}
+  for(const[dr,dc]of ORTH){let rr=r+dr,cc=c+dc;while(rr>=0&&rr<8&&cc>=0&&cc<8){const x=b[rr*8+cc];if(x){if(x===R||x===Q)return true;break}rr+=dr;cc+=dc}}
+  return false;
+}
+
+function gen(st,capsOnly){
+  const b=st.b,us=st.t,them=other(us),ms=[];
+  for(let i=0;i<64;i++){
+    const p=b[i];if(!p||colorOf(p)!==us)continue;
+    const r=i>>3,c=i&7,t=p.toLowerCase();
+    if(t==="p"){
+      const d=us==="w"?-1:1,start=us==="w"?6:1,last=us==="w"?0:7,r1=r+d;
+      const addP=(to,cap)=>{
+        if((to>>3)===last){for(const pr of["q","r","b","n"])ms.push({f:i,t:to,pc:"p",cap:cap?cap.toLowerCase():"",pr})}
+        else ms.push({f:i,t:to,pc:"p",cap:cap?cap.toLowerCase():""});
+      };
+      if(r1>=0&&r1<8){
+        const f=r1*8+c;
+        if(!b[f]&&!capsOnly){addP(f,"");if(r===start&&!b[(r+2*d)*8+c])ms.push({f:i,t:(r+2*d)*8+c,pc:"p",cap:"",dbl:true})}
+        for(const dc of[-1,1]){const c1=c+dc;if(c1<0||c1>7)continue;const s=r1*8+c1;
+          if(b[s]&&colorOf(b[s])===them)addP(s,b[s]);
+          else if(s===st.ep)ms.push({f:i,t:s,pc:"p",cap:"p",ep:true});
+        }
+      }
+    }else if(t==="n"||t==="k"){
+      for(const[dr,dc]of(t==="n"?KN:KG)){const rr=r+dr,cc=c+dc;if(rr<0||rr>7||cc<0||cc>7)continue;const s=rr*8+cc,x=b[s];
+        if(!x){if(!capsOnly)ms.push({f:i,t:s,pc:t,cap:""})}else if(colorOf(x)===them)ms.push({f:i,t:s,pc:t,cap:x.toLowerCase()})}
+      if(t==="k"&&!capsOnly){
+        if(us==="w"&&i===60){
+          if(st.c.includes("K")&&!b[61]&&!b[62]&&b[63]==="R"&&!attacked(b,60,"b")&&!attacked(b,61,"b")&&!attacked(b,62,"b"))ms.push({f:60,t:62,pc:"k",cap:"",cs:true});
+          if(st.c.includes("Q")&&!b[59]&&!b[58]&&!b[57]&&b[56]==="R"&&!attacked(b,60,"b")&&!attacked(b,59,"b")&&!attacked(b,58,"b"))ms.push({f:60,t:58,pc:"k",cap:"",cs:true});
+        }else if(us==="b"&&i===4){
+          if(st.c.includes("k")&&!b[5]&&!b[6]&&b[7]==="r"&&!attacked(b,4,"w")&&!attacked(b,5,"w")&&!attacked(b,6,"w"))ms.push({f:4,t:6,pc:"k",cap:"",cs:true});
+          if(st.c.includes("q")&&!b[3]&&!b[2]&&!b[1]&&b[0]==="r"&&!attacked(b,4,"w")&&!attacked(b,3,"w")&&!attacked(b,2,"w"))ms.push({f:4,t:2,pc:"k",cap:"",cs:true});
+        }
+      }
+    }else{
+      const dirs=t==="b"?DIAG:t==="r"?ORTH:DIAG.concat(ORTH);
+      for(const[dr,dc]of dirs){let rr=r+dr,cc=c+dc;
+        while(rr>=0&&rr<8&&cc>=0&&cc<8){const s=rr*8+cc,x=b[s];
+          if(!x){if(!capsOnly)ms.push({f:i,t:s,pc:t,cap:""})}
+          else{if(colorOf(x)===them)ms.push({f:i,t:s,pc:t,cap:x.toLowerCase()});break}
+          rr+=dr;cc+=dc}}
+    }
+  }
+  return ms;
+}
+
+function make(st,m){
+  const b=st.b.slice(),us=st.t,p=b[m.f];
+  b[m.t]=m.pr?(us==="w"?m.pr.toUpperCase():m.pr):p;b[m.f]="";
+  if(m.ep)b[(m.f>>3)*8+(m.t&7)]="";
+  if(m.cs){
+    if(m.t===62){b[61]=b[63];b[63]=""}else if(m.t===58){b[59]=b[56];b[56]=""}
+    else if(m.t===6){b[5]=b[7];b[7]=""}else if(m.t===2){b[3]=b[0];b[0]=""}
+  }
+  let cr=st.c;
+  if(p==="K")cr=cr.replace("K","").replace("Q","");
+  if(p==="k")cr=cr.replace("k","").replace("q","");
+  for(const s of[m.f,m.t]){if(s===63)cr=cr.replace("K","");if(s===56)cr=cr.replace("Q","");if(s===7)cr=cr.replace("k","");if(s===0)cr=cr.replace("q","")}
+  return {b,t:other(us),c:cr,ep:m.dbl?(m.f+m.t)/2:-1,h:(m.pc==="p"||m.cap)?0:st.h+1,n:st.n+(us==="b"?1:0)};
+}
+function legal(st){return gen(st,false).filter(m=>{const s=make(st,m);return !attacked(s.b,kingSq(s.b,st.t),s.t)})}
+function inCheck(st){return attacked(st.b,kingSq(st.b,st.t),other(st.t))}
+
+function evaluate(st){
+  let s=0;const b=st.b;
+  for(let i=0;i<64;i++){const p=b[i];if(!p)continue;const t=p.toLowerCase();
+    if(p!==t){s+=VAL[t]+PST[t][i]}else{s-=VAL[t]+PST[t][(7-(i>>3))*8+(i&7)]}}
+  return st.t==="w"?s:-s;
+}
+function scoreMove(m){return (m.cap?10*VAL[m.cap]-VAL[m.pc]+1000:0)+(m.pr?VAL[m.pr]:0)}
+function order(ms){for(const m of ms)m._s=scoreMove(m);ms.sort((a,b)=>b._s-a._s);return ms}
+
+function quiesce(st,alpha,beta,qd){
+  const stand=evaluate(st);
+  if(stand>=beta)return beta;
+  if(stand>alpha)alpha=stand;
+  if(qd>=5)return alpha;
+  const ms=order(gen(st,true));
+  for(const m of ms){
+    const s=make(st,m);
+    if(attacked(s.b,kingSq(s.b,st.t),s.t))continue;
+    const v=-quiesce(s,-beta,-alpha,qd+1);
+    if(v>=beta)return beta;
+    if(v>alpha)alpha=v;
+  }
+  return alpha;
+}
+function negamax(st,depth,alpha,beta,ply){
+  if(st.h>=100)return 0;
+  if(depth<=0)return quiesce(st,alpha,beta,0);
+  const ms=legal(st);
+  if(!ms.length)return inCheck(st)?-MATE+ply:0;
+  order(ms);
+  for(const m of ms){
+    const v=-negamax(make(st,m),depth-1,-beta,-alpha,ply+1);
+    if(v>=beta)return beta;
+    if(v>alpha)alpha=v;
+  }
+  return alpha;
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function pickMove(st,lvl){
+  const ms=legal(st);if(!ms.length)return null;
+  shuffle(ms);order(ms);
+  if(lvl===0){
+    const sc=ms.map(m=>({m,v:-negamax(make(st,m),0,-INF,INF,1)}));
+    sc.sort((a,b)=>b.v-a.v);
+    const ok=sc.filter(x=>x.v>=sc[0].v-90);
+    return ok[Math.floor(Math.random()*ok.length)].m;
+  }
+  const depth=lvl===1?2:4;
+  let best=ms[0],alpha=-INF;
+  for(const m of ms){
+    const v=-negamax(make(st,m),depth-1,-INF,-alpha,1);
+    if(v>alpha){alpha=v;best=m}
+  }
+  return best;
+}
+function san(st,m,list){
+  let s;
+  if(m.cs)s=(m.t&7)===6?"O-O":"O-O-O";
+  else if(m.pc==="p"){s=(m.cap?FILES[m.f&7]+"x":"")+sqName(m.t);if(m.pr)s+="="+m.pr.toUpperCase()}
+  else{
+    let dis="";const others=list.filter(o=>o.t===m.t&&o.f!==m.f&&st.b[o.f]===st.b[m.f]);
+    if(others.length){
+      const sf=others.some(o=>(o.f&7)===(m.f&7)),sr=others.some(o=>(o.f>>3)===(m.f>>3));
+      dis=!sf?FILES[m.f&7]:!sr?String(8-(m.f>>3)):sqName(m.f);
+    }
+    s=m.pc.toUpperCase()+dis+(m.cap?"x":"")+sqName(m.t);
+  }
+  const ns=make(st,m);if(inCheck(ns))s+=legal(ns).length?"+":"#";
+  return s;
+}
+
+const uciOf=m=>sqName(m.f)+sqName(m.t)+(m.pr||"");
+const posKey=st=>st.b.join(",")+st.t+st.c+st.ep;
+function fromFen(f){
+  const [pos,t,c,ep]=f.split(" ");const b=[];
+  for(const ch of pos.replace(/\//g,"")){if(/\d/.test(ch))for(let i=0;i<+ch;i++)b.push("");else b.push(ch)}
+  let e=-1;if(ep&&ep!=="-")e=(8-+ep[1])*8+FILES.indexOf(ep[0]);
+  return {b,t,c:c==="-"?"":c,ep:e,h:0,n:1};
+}
+
+/* ---------- Data ---------- */
+// [ชื่อ, ช่องสว่าง, ช่องเข้ม, กรอบ, หมากขาว, หมากดำ, ขอบหมากขาว, ขอบหมากดำ, จุด]
+const THEMES=[
+["คลาสสิกสเลต","#DAE2E7","#6B8397","#2E3D4A"],
+["ไม้โอ๊ก","#F0D9B5","#B58863","#5A3E26"],
+["ทุ่งหญ้า","#EEEED2","#769656","#3E5530"],
+["ทะเลสาบ","#DEE3E6","#8CA2AD","#40525C"],
+["หินอ่อน","#ECEAE4","#A29C94","#57524C"],
+["กาแฟนม","#E9D8C4","#9C7A5B","#4B3627"],
+["ลาเวนเดอร์","#EDE5F5","#9580BF","#4B3B6E"],
+["ซากุระ","#FCE6EC","#D98FA3","#8A4458"],
+["มิ้นต์","#E2F3ED","#62A68D","#2F5E4D"],
+["ทะเลทราย","#F3E4C7","#C9A36B","#7A5B30"],
+["มะฮอกกานี","#E6CBAA","#7D4B2F","#3E2314"],
+["ช็อกโกแลต","#DCC0A3","#5E3B22","#2E1B0E"],
+["ธารน้ำแข็ง","#EEF8FC","#9FCBE0","#4F7F96"],
+["ราตรี","#566173","#2F3947","#141A22","#F2F4F7","#0B0F14","#10151B","#C9D3DE","rgba(255,255,255,.35)"],
+["นีออน","#2A2350","#16122E","#07051A","#7FF7FF","#FF5FD2","#04212A","#2A0420","rgba(255,255,255,.4)"],
+["ทองคำ","#F6E8BB","#B99231","#5E4812"],
+["มรกต","#D6EFDD","#2F7F5C","#173F2E"],
+["ทับทิม","#F5D8D8","#A0303F","#4F141D"],
+["ไพลิน","#D8E6F6","#2C5696","#12284A"],
+["อาทิตย์อัสดง","#FDE5C6","#E17C42","#7A3515"],
+["หนังสือพิมพ์","#F5F5F0","#B3B3AA","#4D4D48"],
+["ขาวดำ","#FFFFFF","#6E6E6E","#1A1A1A"],
+["ท้องฟ้าสดใส","#E4F2FD","#66B3F2","#1F5E91"],
+["มะนาว","#F2F8D2","#9DB83C","#4C5E14"],
+["ไวน์แดง","#ECD4D8","#6F2435","#330E17"],
+["ดินเผา","#F1D7C4","#B6664B","#5C2C1C"],
+["ป่าสน","#DDE6D6","#415F4A","#1C2E22"],
+["ทะเลลึก","#2A4D78","#14304F","#08182A","#E8F3FF","#050B14","#0A1626","#9FC2E8","rgba(255,255,255,.35)"],
+["ลูกกวาด","#FFE4F2","#8FD2EA","#C45A95"],
+["ไซเบอร์","#16263A","#0C1624","#030810","#B6FFB0","#FF9F43","#0C2A10","#2A1400","rgba(160,255,160,.35)"],
+["วัดไทย","#F7E8C3","#8C1F1F","#4A0D0D"],
+["หยก","#E0F1E4","#70A98B","#335E48"],
+["ถ่านหิน","#A0A0A0","#505050","#1F1F1F","#FFFFFF","#0E0E0E","#111111","#DDDDDD","rgba(255,255,255,.35)"],
+["พีช","#FFEADF","#F2A582","#9A4F31"],
+["เทอร์ควอยซ์","#D6F3F0","#2A9D8F","#12504A"]
+];
+const FREE_THEMES=6;
+const themePrice=i=>i<FREE_THEMES?0:20+(i-FREE_THEMES)*6;
+
+const LOGIN_REWARD=[10,15,20,25,30,40,80];
+const WIN_REWARD=[15,30,50];
+const LEVELS=[
+  {n:"ง่าย",d:"เหมาะกับมือใหม่ คอมพิวเตอร์มองแค่ตาเดียวและพลาดบ้าง"},
+  {n:"ปานกลาง",d:"คอมพิวเตอร์คิดล่วงหน้า 2 ตา ไม่ปล่อยหมากให้กินง่าย ๆ"},
+  {n:"ยาก",d:"คอมพิวเตอร์คิดล่วงหน้า 4 ตา ต้องวางแผนดี ๆ ถึงจะชนะ"}
+];
+const CLS=[
+  {n:"ยอดเยี่ยม",e:"💎",c:"#2BA3C7"},
+  {n:"เยี่ยม",e:"🌟",c:"#3E9E5B"},
+  {n:"ดี",e:"👍",c:"#86A83C"},
+  {n:"ก้ำกึ่ง",e:"🤔",c:"#D8A93A"},
+  {n:"แย่",e:"😬",c:"#E07B39"},
+  {n:"ผิดพลาด",e:"💥",c:"#C8452F"}
+];
+const PHASES=[["open","ต้นเกม"],["mid","กลางเกม"],["end","ท้ายเกม"]];
+
+const LESSONS=[
+{t:"รุกจนแถวหลัง",fen:"6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - -",sol:["d1d8"],
+ tip:"คิงที่หลบอยู่หลังแถวเบี้ยของตัวเองมักไม่มีช่องหนี ถ้าเรือหรือควีนของเราบุกถึงแถวหลังสุดได้ก็รุกจนทันที",
+ goal:"ขาวเดิน หาตารุกจนในตาเดียว",
+ exp:"Rd8# เบี้ย f7 g7 h7 ของดำขวางทางหนีคิงเอง ข้อควรจำ: หลังเข้าป้อมแล้ว ควรเปิดช่องหายใจให้คิงด้วยการเดินเบี้ย h หรือ g หนึ่งช่อง"},
+{t:"ม้าแยกส้อม",fen:"r3k3/8/8/1N6/8/8/8/4K3 w - -",sol:["b5c7"],
+ tip:"ม้าเดินเป็นรูปตัว L จึงโจมตีหมากสองตัวพร้อมกันได้โดยที่อีกฝ่ายกินคืนยาก ช่องที่รุกคิงไปพร้อมกับโจมตีเรือเรียกว่าส้อมราชวงศ์",
+ goal:"ขาวเดิน หาตาที่ได้หมากฟรี",
+ exp:"Nc7+ รุกคิงและโจมตีเรือ a8 พร้อมกัน คิงต้องหนี แล้วม้ากินเรือได้ฟรี"},
+{t:"การเสียบ",fen:"R7/8/8/3k4/8/8/3q4/7K w - -",sol:["a8d8"],
+ tip:"การเสียบคือโจมตีหมากที่มีค่ามากกว่าซึ่งอยู่ด้านหน้า เมื่อมันหลบ เราจะได้กินหมากที่อยู่ด้านหลังในแนวเดียวกัน",
+ goal:"ขาวเดิน ใช้เรือเสียบคิงเพื่อกินควีน",
+ exp:"Rd8+ รุกคิงบนแนวตั้ง d คิงต้องหลบออกจากแนว แล้ว Rxd2 กินควีนที่อยู่ด้านหลังได้"},
+{t:"การตรึง",fen:"6k1/6pp/4q3/8/8/1P6/5PPP/5BK1 w - -",sol:["f1c4"],
+ tip:"ตรึงคือการโจมตีหมากที่ขยับไม่ได้ เพราะถ้าขยับ คิงด้านหลังจะโดนรุก หมากที่ถูกตรึงกับคิงจึงหนีไม่ได้เลย",
+ goal:"ขาวเดิน ตรึงควีนดำไว้กับคิง",
+ exp:"Bc4 ตรึงควีน e6 ไว้กับคิง g8 ควีนหนีไม่ได้ ถ้ากินบิชอปก็ถูกเบี้ย b3 กินคืน ขาวได้ควีนแลกบิชอป"},
+{t:"เปิดทางรุก",fen:"4k3/8/q7/8/4B3/8/8/4R1K1 w - -",sol:["e4d3","e4b7"],
+ tip:"เมื่อหมากตัวหน้าหลบออกจากแนว หมากตัวหลังจะได้รุกทันที ส่วนหมากที่หลบออกไปก็ไปโจมตีเป้าหมายอื่นได้อีก อีกฝ่ายรับมือทั้งสองอย่างพร้อมกันไม่ได้",
+ goal:"ขาวเดิน เปิดทางให้เรือรุก พร้อมโจมตีควีน",
+ exp:"บิชอปหลบออกไปโจมตีควีน a6 และเปิดให้เรือ e1 รุกคิงพร้อมกัน ดำต้องแก้รุกก่อน ขาวจึงกินควีนได้"},
+{t:"จูบมรณะของควีน",fen:"7k/8/5K2/8/8/8/8/6Q1 w - -",sol:["g1g7"],
+ tip:"ควีนที่ยืนติดคิงฝ่ายตรงข้าม โดยมีคิงของเราคอยป้องกัน คือรูปแบบรุกจนพื้นฐานที่สุดของตอนท้ายเกม",
+ goal:"ขาวเดิน หาตารุกจนในตาเดียว",
+ exp:"Qg7# ควีนยืนชิดคิงดำ โดยมีคิงขาว f6 คุ้มกัน ดำกินคืนไม่ได้และไม่มีช่องหนี"},
+{t:"บันไดเรือ",fen:"6k1/R7/8/8/8/8/8/1R4K1 w - -",sol:["b1b8"],
+ tip:"เรือสองลำผลัดกันคุมแถวทีละแถวเหมือนขึ้นบันได ลำหนึ่งกันแถวที่ 7 อีกลำขึ้นไปรุกที่แถวที่ 8",
+ goal:"ขาวเดิน หาตารุกจนในตาเดียว",
+ exp:"Rb8# เรือ a7 คุมแถว 7 ไว้แล้ว เรือ b8 รุกตลอดแถว 8 คิงดำไม่มีที่ไป"},
+{t:"เลื่อนขั้นเบี้ย",fen:"8/6P1/8/8/8/8/k7/4K3 w - -",sol:["g7g8q"],
+ tip:"เบี้ยที่เดินไปถึงแถวสุดท้ายจะกลายเป็นหมากอื่นได้ ส่วนใหญ่เลือกควีนเพราะแรงที่สุด",
+ goal:"ขาวเดิน สร้างควีนตัวใหม่",
+ exp:"g8=Q เบี้ยกลายเป็นควีน ตอนนี้ขาวมีหมากเหนือกว่ามากและพร้อมไล่รุกจน"},
+{t:"ควีนโจมตีสองทาง",fen:"r5k1/8/8/8/8/8/8/3Q2K1 w - -",sol:["d1d5"],
+ tip:"ควีนเดินได้ทั้งแนวตรงและแนวทแยง จึงรุกคิงพร้อมโจมตีหมากอีกตัวได้บ่อย มองหาช่องที่อยู่บนแนวของเป้าหมายทั้งสอง",
+ goal:"ขาวเดิน หาตาที่ได้เรือฟรี",
+ exp:"Qd5+ รุกคิงผ่านแนวทแยง d5-g8 และโจมตีเรือ a8 ผ่านแนวทแยง d5-a8 คิงหนีแล้วขาวกินเรือ"},
+{t:"รุกจนแบบอุดทาง",fen:"6rk/6pp/8/6N1/8/8/8/6K1 w - -",sol:["g5f7"],
+ tip:"เมื่อคิงถูกหมากของตัวเองล้อมไว้หมด ม้าตัวเดียวก็รุกจนได้ เพราะไม่มีหมากตัวไหนมาขวางทางม้า",
+ goal:"ขาวเดิน หาตารุกจนในตาเดียว",
+ exp:"Nf7# คิงดำถูกเรือ g8 และเบี้ย g7 h7 ของตัวเองล้อมอยู่ ม้ารุกได้โดยไม่มีใครกินคืน"},
+{t:"คุมศูนย์กลาง",fen:"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -",sol:["e2e4","d2d4"],
+ tip:"ช่อง e4 d4 e5 d5 คือศูนย์กลางกระดาน หมากที่อยู่ตรงกลางเดินไปได้หลายทาง การยึดศูนย์กลางตั้งแต่ตาแรกช่วยให้หมากทุกตัวออกมาเล่นได้ง่าย",
+ goal:"ขาวเดินตาแรก เดินเบี้ยยึดศูนย์กลาง 2 ช่อง",
+ exp:"เบี้ยกลางคุมช่องสำคัญ และเปิดทางให้บิชอปกับควีนออกมา หลักการเปิดเกม: ยึดศูนย์กลาง ออกม้าและบิชอป แล้วรีบเข้าป้อม"},
+{t:"เข้าป้อมให้ปลอดภัย",fen:"r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq -",sol:["e1g1"],
+ tip:"การเข้าป้อมพาคิงออกจากศูนย์กลางไปหลบหลังเบี้ย และพาเรือออกมาร่วมเกมในตาเดียว ทำได้เมื่อคิงกับเรือยังไม่เคยเดินและไม่มีหมากขวาง",
+ goal:"ขาวเดิน เข้าป้อมฝั่งคิง (แตะคิงแล้วแตะช่อง g1)",
+ exp:"O-O คิงปลอดภัยขึ้นมาก และเรือพร้อมเข้าเกมทางแนว f ควรเข้าป้อมภายใน 10 ตาแรก"},
+{t:"เบี้ยแยกส้อม",fen:"4k3/8/2n1b3/8/2PP4/8/8/4K3 w - -",sol:["d4d5"],
+ tip:"เบี้ยมีค่าน้อยที่สุด เมื่อเบี้ยโจมตีหมากใหญ่สองตัวพร้อมกัน อีกฝ่ายต้องเสียหมากแน่ ๆ อย่าลืมให้มีหมากคุ้มกันเบี้ยตัวนั้นด้วย",
+ goal:"ขาวเดิน ใช้เบี้ยโจมตีม้าและบิชอปพร้อมกัน",
+ exp:"d5 โจมตีม้า c6 และบิชอป e6 พร้อมกัน โดยมีเบี้ย c4 คุ้มกันอยู่ ดำเสียหมากหนึ่งตัวแน่นอน"},
+{t:"เรือกับคิงรุกจน",fen:"k7/8/1K6/8/8/8/8/7R w - -",sol:["h1h8"],
+ tip:"คิงของเราคุมช่องหน้าคิงฝ่ายตรงข้าม แล้วให้เรือรุกตลอดแถวหลัง นี่คือรุกจนพื้นฐานที่ควรทำได้คล่อง",
+ goal:"ขาวเดิน หาตารุกจนในตาเดียว",
+ exp:"Rh8# คิงขาว b6 คุมช่อง a7 b7 ไว้ เรือรุกตลอดแถวที่ 8 คิงดำจึงไม่มีทางหนี"}
+];
+
+/* ---------- Storage ---------- */
+const STORE="chess-app-v2";
+const defaults=()=>({settings:{theme:0,dots:true,coords:true,sound:true},coins:0,owned:[0,1,2,3,4,5],
+  login:{last:null,streak:0},lesson:{done:null,solved:[]},stats:{w:0,l:0,d:0},game:null,newPrefs:{color:"w",level:1}});
+let DB=defaults();
+try{const r=localStorage.getItem(STORE);if(r){const d=JSON.parse(r);DB=Object.assign(defaults(),d);DB.settings=Object.assign(defaults().settings,d.settings||{})}}catch(e){}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(DB))}catch(e){}}
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const dayNum=s=>{const[y,m,d]=s.split("-").map(Number);return Math.round(Date.UTC(y,m-1,d)/864e5)};
+
+/* ---------- Helpers ---------- */
+const $=id=>document.getElementById(id);
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),2200)}
+function modal(title,text,buttons){
+  const box=$("modalBox");box.innerHTML="";
+  const h=document.createElement("h3");h.textContent=title;box.appendChild(h);
+  if(text){const p=document.createElement("p");p.textContent=text;box.appendChild(p)}
+  const row=document.createElement("div");row.className="row";
+  for(const b of buttons){const el=document.createElement("button");el.className="btn"+(b.primary?" primary":"");el.textContent=b.label;
+    el.onclick=()=>{closeModal();b.fn&&b.fn()};row.appendChild(el)}
+  box.appendChild(row);$("modal").classList.add("show");row.lastChild.focus();
+}
+function closeModal(){$("modal").classList.remove("show")}
+$("modal").addEventListener("click",e=>{if(e.target.id==="modal"&&!modal.locked)closeModal()});
+function addCoins(n,why){DB.coins+=n;save();toast(`+${n} 🪙 ${why}`);refreshCoins()}
+function refreshCoins(){for(const id of["coinTxt","coinTxt2","coinTxt3","coinTxt4"])$(id).textContent=DB.coins}
+let actx=null;
+function beep(cap){
+  if(!DB.settings.sound)return;
+  try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();
+    o.type="triangle";o.frequency.value=cap?196:392;g.gain.setValueAtTime(.12,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+.12);
+    o.connect(g).connect(actx.destination);o.start();o.stop(actx.currentTime+.13)}catch(e){}
+}
+function applyTheme(){
+  const t=THEMES[DB.settings.theme]||THEMES[0],s=document.documentElement.style;
+  s.setProperty("--sq-light",t[1]);s.setProperty("--sq-dark",t[2]);s.setProperty("--frame",t[3]);
+  s.setProperty("--wp",t[4]||"#FBFBF7");s.setProperty("--bp",t[5]||"#18212A");
+  s.setProperty("--wo",t[6]||"#1B242B");s.setProperty("--bo",t[7]||"rgba(255,255,255,.5)");s.setProperty("--dot",t[8]||"rgba(20,30,40,.32)");
+}
+const gameActive=()=>!!(DB.game&&!DB.game.result);
+
+/* ---------- Board widget ---------- */
+function Board(host,interactive,onClick){
+  this.flip=false;this.cells=[];host.innerHTML="";
+  for(let v=0;v<64;v++){
+    const el=document.createElement(interactive?"button":"div");
+    el.className="sq";
+    if(interactive){el.type="button";el.setAttribute("role","gridcell");el.addEventListener("click",()=>onClick(this.flip?63-v:v))}
+    el.innerHTML='<span class="pc"></span><span class="rk"></span><span class="fl"></span>';
+    host.appendChild(el);this.cells.push(el);
+  }
+}
+Board.prototype.draw=function(st,o){
+  o=o||{};const tg=o.targets||[];
+  for(let v=0;v<64;v++){
+    const sq=this.flip?63-v:v,el=this.cells[v],p=st.b[sq];
+    const cls=["sq",((sq>>3)+(sq&7))%2?"dark":"light"];
+    if(o.last&&(o.last.f===sq||o.last.t===sq))cls.push("last");
+    if(sq===o.sel)cls.push("sel");
+    if(sq===o.hint)cls.push("hint");
+    if(DB.settings.dots){const t=tg.find(m=>m.t===sq);if(t){cls.push("target");if(t.cap)cls.push("cap")}}
+    if(sq===o.check)cls.push("check");
+    el.className=cls.join(" ");
+    el.children[0].textContent=p?GLYPH[p.toLowerCase()]+VS:"";
+    el.children[0].className="pc "+(p?colorOf(p):"");
+    const coords=o.coords!==false&&DB.settings.coords;
+    el.children[1].textContent=coords&&(v&7)===0?String(8-(sq>>3)):"";
+    el.children[2].textContent=coords&&(v>>3)===7?FILES[sq&7]:"";
+    if(el.tagName==="BUTTON")el.setAttribute("aria-label",sqName(sq)+(p?" "+(colorOf(p)==="w"?"ขาว":"ดำ")+NAME[p.toLowerCase()]:" ว่าง"));
+  }
+};
+
+/* ---------- Screens ---------- */
+let screen="menu";
+function show(name){
+  screen=name;
+  for(const s of document.querySelectorAll(".screen"))s.hidden=s.id!=="scr-"+name;
+  try{window.scrollTo(0,0)}catch(e){}
+  ({menu:renderMenu,new:renderNew,game:renderGame,lesson:renderLesson,login:renderLogin,settings:renderSettings})[name]();
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b)show(b.dataset.go)});
+
+/* ---------- Menu ---------- */
+const heroBoard=new Board($("heroBoard"),false);
+function loginState(){
+  const t=today(),L=DB.login;
+  if(L.last===t)return{claimed:true,streak:L.streak,day:((L.streak-1)%7)+1};
+  const cont=L.last&&dayNum(t)-dayNum(L.last)===1,next=cont?L.streak+1:1;
+  return{claimed:false,streak:cont?L.streak:0,next,day:((next-1)%7)+1};
+}
+function renderMenu(){
+  refreshCoins();
+  heroBoard.draw(DB.game?(states.length?cur():initial()):initial(),{coords:false,last:DB.game&&moves.length?moves[moves.length-1]:null});
+  const ls=loginState();
+  $("streakTxt").textContent=ls.streak;
+  $("loginBadge").textContent=ls.claimed?"รับแล้ว":"รับรางวัล";
+  $("loginBadge").className="badge"+(ls.claimed?" done":"");
+  const li=todayLessonIdx(),done=DB.lesson.done===today();
+  $("lessonInfo").textContent="วันนี้: "+LESSONS[li].t;
+  $("lessonBadge").textContent=done?"สำเร็จแล้ว":"ใหม่";
+  $("lessonBadge").className="badge"+(done?" done":"");
+  const c=$("mContinue");
+  if(DB.game){
+    c.hidden=false;
+    c.firstChild.firstChild.textContent=DB.game.result?"ดูผลเกมล่าสุด":"เล่นต่อ";
+    $("contInfo").textContent=DB.game.result?DB.game.result.text:`ระดับ${LEVELS[DB.game.level].n}, เดินไปแล้ว ${Math.ceil(moves.length/2)} ตา`;
+  }else c.hidden=true;
+  const s=DB.stats;$("statsTxt").textContent=`สถิติของคุณ: ชนะ ${s.w} ครั้ง, แพ้ ${s.l} ครั้ง, เสมอ ${s.d} ครั้ง`;
+}
+$("mContinue").onclick=()=>{show("game");if(DB.game&&!DB.game.result)maybeAI();else runAnalysis()};
+$("mNew").onclick=()=>show("new");
+$("mLesson").onclick=()=>openLesson(todayLessonIdx());
+$("mLogin").onclick=()=>show("login");
+$("mSettings").onclick=()=>show("settings");
+
+/* ---------- New game ---------- */
+function renderNew(){
+  const p=DB.newPrefs;
+  for(const b of document.querySelectorAll("#colorSeg button"))b.setAttribute("aria-pressed",String(b.dataset.v===p.color));
+  for(const b of document.querySelectorAll("#levelSeg button"))b.setAttribute("aria-pressed",String(+b.dataset.v===p.level));
+  $("levelDesc").textContent=LEVELS[p.level].d;
+}
+$("colorSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;DB.newPrefs.color=b.dataset.v;save();renderNew()};
+$("levelSeg").onclick=e=>{const b=e.target.closest("button");if(!b)return;DB.newPrefs.level=+b.dataset.v;save();renderNew()};
+$("startBtn").onclick=()=>{
+  if(gameActive()&&moves.length){
+    modal("มีเกมที่ยังเล่นไม่จบ","ถ้าเริ่มเกมใหม่ เกมเดิมจะนับเป็นการยอมแพ้",[
+      {label:"ยกเลิก"},{label:"ยอมแพ้และเริ่มใหม่",primary:true,fn:()=>{finalize({code:"loss",text:"คุณยอมแพ้"},true);startGame()}}]);
+  }else startGame();
+};
+
+/* ---------- Game ---------- */
+let states=[],moves=[],view=null,sel=-1,targets=[],thinking=false,gameId=0,analyzing=false,anaDone=0,anaTotal=0,pendingPromo=false;
+const cur=()=>states[states.length-1];
+const gameBoard=new Board($("gameBoard"),true,onGameSq);
+function loadGame(){
+  states=[initial()];moves=[];
+  if(!DB.game)return;
+  for(const[f,t,pr]of DB.game.moves){
+    const st=cur(),list=legal(st),m=list.find(x=>x.f===f&&x.t===t&&(x.pr||"")===pr);
+    if(!m)break;
+    moves.push({f,t,pr,cap:m.cap,san:san(st,m,list)});states.push(make(st,m));
+  }
+}
+function startGame(){
+  gameId++;thinking=false;analyzing=false;view=null;sel=-1;targets=[];
+  const c=DB.newPrefs.color,player=c==="r"?(Math.random()<.5?"w":"b"):c;
+  DB.game={player,level:DB.newPrefs.level,moves:[],result:null,analysis:null};
+  states=[initial()];moves=[];save();show("game");maybeAI();
+}
+function posOutcome(){
+  const st=cur(),ms=legal(st),P=DB.game.player;
+  if(!ms.length){
+    if(inCheck(st))return st.t!==P?{code:"win",text:"รุกจน! คุณชนะ"}:{code:"loss",text:"ถูกรุกจน คอมพิวเตอร์ชนะ"};
+    return{code:"draw",text:"เสมอ เพราะอับ (ไม่มีตาเดิน)"};
+  }
+  if(st.h>=100)return{code:"draw",text:"เสมอ ตามกฎ 50 ตา"};
+  const k=posKey(st);if(states.filter(s=>posKey(s)===k).length>=3)return{code:"draw",text:"เสมอ เพราะตำแหน่งซ้ำ 3 ครั้ง"};
+  const rest=st.b.filter(p=>p&&p.toLowerCase()!=="k");
+  if(!rest.length||(rest.length===1&&"nbNB".includes(rest[0])))return{code:"draw",text:"เสมอ เพราะหมากเหลือไม่พอรุกจน"};
+  return null;
+}
+function finalize(o,silent){
+  const g=DB.game;if(!g||g.result)return;
+  const rw=o.code==="win"?WIN_REWARD[g.level]:o.code==="draw"?10:5;
+  g.result=Object.assign({reward:rw},o);
+  DB.stats[o.code==="win"?"w":o.code==="draw"?"d":"l"]++;
+  DB.coins+=rw;save();refreshCoins();
+  if(!silent){toast(`+${rw} 🪙 จากการเล่นจบเกม`);renderGame();runAnalysis()}
+}
+function play(m){
+  const st=cur(),list=legal(st);
+  moves.push({f:m.f,t:m.t,pr:m.pr||"",cap:m.cap,san:san(st,m,list)});
+  states.push(make(st,m));
+  DB.game.moves.push([m.f,m.t,m.pr||""]);
+  sel=-1;targets=[];save();beep(m.cap);
+  const o=posOutcome();
+  if(o){finalize(o)}else{renderGame();maybeAI()}
+}
+function maybeAI(){
+  if(!gameActive()||thinking||cur().t===DB.game.player)return;
+  thinking=true;renderGame();
+  const id=gameId;
+  setTimeout(()=>{
+    if(id!==gameId){thinking=false;return}
+    const m=pickMove(cur(),DB.game.level);
+    thinking=false;
+    if(id!==gameId||!gameActive())return;
+    if(m)play(m);else renderGame();
+  },120);
+}
+function onGameSq(sq){
+  if(!DB.game||pendingPromo)return;
+  if(view!==null){view=null;renderGame();return}
+  if(!gameActive()||thinking)return;
+  const st=cur();if(st.t!==DB.game.player)return;
+  const hits=targets.filter(m=>m.t===sq);
+  if(sel>=0&&hits.length){if(hits.length>1&&hits[0].pr){askPromo(hits);return}play(hits[0]);return}
+  const p=st.b[sq];
+  if(p&&colorOf(p)===DB.game.player&&sq!==sel){sel=sq;targets=legal(st).filter(m=>m.f===sq)}else{sel=-1;targets=[]}
+  renderGame();
+}
+function askPromo(opts){
+  pendingPromo=true;
+  const box=$("modalBox");box.innerHTML='<h3>เลื่อนขั้นเบี้ยเป็น</h3><p>เลือกหมากที่ต้องการ</p>';
+  const row=document.createElement("div");row.className="popts";
+  for(const t of["q","r","b","n"]){
+    const b=document.createElement("button");b.type="button";b.setAttribute("aria-label",NAME[t]);
+    b.innerHTML=`<span class="pc ${DB.game.player}">${GLYPH[t]+VS}</span>`;
+    b.onclick=()=>{closeModal();pendingPromo=false;play(opts.find(o=>o.pr===t))};
+    row.appendChild(b);
+  }
+  box.appendChild(row);modal.locked=true;$("modal").classList.add("show");row.firstChild.focus();
+}
+function setView(v){if(!DB.game)return;sel=-1;targets=[];view=(v===null||v>=moves.length)?null:Math.max(0,v);renderGame()}
+$("nFirst").onclick=()=>setView(0);
+$("nPrev").onclick=()=>setView((view===null?moves.length:view)-1);
+$("nNext").onclick=()=>{if(view!==null)setView(view+1)};
+$("nLast").onclick=()=>setView(null);
+document.addEventListener("keydown",e=>{
+  if(screen!=="game"||$("modal").classList.contains("show"))return;
+  if(e.key==="ArrowLeft"){e.preventDefault();$("nPrev").click()}
+  if(e.key==="ArrowRight"){e.preventDefault();$("nNext").click()}
+});
+
+function renderGame(){
+  if(screen!=="game")return;
+  refreshCoins();
+  const g=DB.game;if(!g){show("menu");return}
+  const P=g.player,shown=view===null?moves.length:view,st=states[shown];
+  gameBoard.flip=P==="b";
+  gameBoard.draw(st,{sel,targets,last:shown?moves[shown-1]:null,check:inCheck(st)?kingSq(st.b,st.t):-1});
+  $("lvlChip").textContent=`ระดับ${LEVELS[g.level].n} 🔒`;
+  // status
+  const s=$("status");let txt,cls="";
+  if(view!==null){txt=`กำลังดูย้อนหลัง ตำแหน่งที่ ${view} จาก ${moves.length}`;cls="review";
+    s.innerHTML=`${txt}<small>${g.result?"":"แตะกระดานหรือกด ⏭ เพื่อกลับไปเล่นต่อ"}</small>`}
+  else{
+    if(g.result){txt=g.result.text;cls="done"}
+    else if(thinking)txt="คอมพิวเตอร์กำลังคิด…";
+    else if(cur().t===P){const c=inCheck(cur());txt=c?"คุณถูกรุก! ต้องแก้รุก":"ตาคุณเดิน";if(c)cls="alert"}
+    else txt="ตาคอมพิวเตอร์";
+    s.textContent=txt;
+  }
+  s.className="status "+cls;
+  // review buttons
+  $("nFirst").disabled=$("nPrev").disabled=shown===0;
+  $("nNext").disabled=$("nLast").disabled=view===null;
+  // captured
+  const start={p:8,n:2,b:2,r:2,q:1},cnt={w:{p:0,n:0,b:0,r:0,q:0},b:{p:0,n:0,b:0,r:0,q:0}};
+  for(const p of st.b)if(p&&p.toLowerCase()!=="k")cnt[colorOf(p)][p.toLowerCase()]++;
+  const lost=c=>{let s="",m=0;for(const t of["q","r","b","n","p"]){const k=Math.max(0,start[t]-cnt[c][t]);s+=(GLYPH[t]+VS).repeat(k);m+=k*VAL[t]}return{s,m}};
+  const lw=lost("w"),lb=lost("b"),mine=P==="w"?lb:lw,theirs=P==="w"?lw:lb,diff=Math.round((mine.m-theirs.m)/100);
+  $("capsBottom").innerHTML=mine.s+(diff>0?`<span class="adv">+${diff}</span>`:"");
+  $("capsTop").innerHTML=theirs.s+(diff<0?`<span class="adv">+${-diff}</span>`:"");
+  // moves list
+  const A=g.analysis&&g.analysis.moves,mv=$("moves");
+  if(!moves.length)mv.innerHTML='<div class="empty">ยังไม่มีการเดิน</div>';
+  else{
+    let h="";
+    const cell=i=>{if(i>=moves.length)return"<span></span>";const a=A&&A[i];
+      return `<button data-ply="${i+1}" class="${view===i+1||(view===null&&i===moves.length-1)?"on":""}">${moves[i].san}${a?" "+CLS[a.c].e:""}</button>`};
+    for(let i=0;i<moves.length;i+=2)h+=`<div class="row"><span class="no">${i/2+1}.</span>${cell(i)}${cell(i+1)}</div>`;
+    mv.innerHTML=h;
+    const on=mv.querySelector(".on");if(on){const r=on.parentNode;if(r.offsetTop<mv.scrollTop||r.offsetTop+r.offsetHeight>mv.scrollTop+mv.clientHeight)mv.scrollTop=r.offsetTop-mv.clientHeight/2}
+  }
+  // review note
+  const rn=$("reviewNote");rn.innerHTML="";
+  if(A&&view!==null&&view>0&&A[view-1]){
+    const a=A[view-1],c=CLS[a.c];
+    rn.innerHTML=`<div class="note" style="border-left:5px solid ${c.c}">${c.e} <b>${moves[view-1].san}</b> ${c.n} (แม่นยำ ${Math.round(a.acc)}%)${a.best?`<br><span class="muted">ตาที่ดีที่สุดคือ ${a.best}</span>`:""}</div>`;
+  }
+  // result + analysis
+  renderResult();
+  // actions
+  const act=$("gameActions");
+  if(g.result){act.innerHTML='<button class="btn primary" id="aNew">เล่นเกมใหม่</button><button class="btn" id="aMenu">เมนูหลัก</button>';
+    $("aNew").onclick=()=>show("new");$("aMenu").onclick=()=>show("menu")}
+  else{act.innerHTML='<button class="btn danger" id="aResign">ยอมแพ้</button><button class="btn" id="aMenu">พักไว้ก่อน</button>';
+    $("aResign").onclick=()=>modal("ยอมแพ้เกมนี้?","เกมจะจบทันทีและนับเป็นแพ้ จากนั้นจะแสดงการวิเคราะห์การเดินของคุณ",[
+      {label:"เล่นต่อ"},{label:"ยอมแพ้",primary:true,fn:()=>{gameId++;thinking=false;view=null;finalize({code:"loss",text:"คุณยอมแพ้"})}}]);
+    $("aMenu").onclick=()=>show("menu")}
+}
+$("moves").addEventListener("click",e=>{const b=e.target.closest("[data-ply]");if(!b)return;const p=+b.dataset.ply;setView(p===moves.length?null:p)});
+
+function renderResult(){
+  const g=DB.game,box=$("resultBox");
+  if(!g||!g.result){box.innerHTML="";return}
+  const r=g.result,icon=r.code==="win"?"🏆":r.code==="draw"?"🤝":"🏳️";
+  let h=`<div class="result"><div class="big">${icon} ${r.text}</div><div class="rw">ได้รับ ${r.reward} 🪙</div></div>`;
+  if(!g.analysis){
+    const pct=anaTotal?Math.round(anaDone/anaTotal*100):0;
+    h+=`<div class="ana"><div>กำลังวิเคราะห์การเดินของคุณ ${anaDone}/${anaTotal||"…"}</div><div class="prog"><i id="progBar" style="width:${pct}%"></i></div></div>`;
+  }else if(g.analysis.none){
+    h+=`<div class="ana"><div class="muted">เกมนี้คุณยังไม่ได้เดิน จึงไม่มีข้อมูลให้วิเคราะห์</div></div>`;
+  }else{
+    const S=g.analysis.sum;
+    h+=`<div class="ana"><div class="acc"><b>${S.acc.toFixed(1)}%</b><span>ความแม่นยำในการเดิน<br><span class="muted">จาก ${S.total} ตาที่คุณเดิน</span></span></div>`;
+    h+=`<div><div class="lbl">คะแนนแต่ละช่วงของเกม (เต็ม 100)</div><div class="phases">`;
+    for(const[k,n]of PHASES){const p=S.ph[k];
+      h+=`<div class="phase"><div class="pn">${n}</div><div class="ps">${p.n?Math.round(p.acc):"–"}</div><div class="pv">${p.n?verdict(p.acc)+`, ${p.n} ตา`:"ไม่ถึงช่วงนี้"}</div></div>`}
+    h+=`</div></div><div><div class="lbl">ประเภทการเดิน</div><div class="clist">`;
+    CLS.forEach((c,i)=>{h+=`<div class="citem" style="--c:${c.c}"><span class="ce">${c.e}</span><span class="cn">${c.n}</span><b>${S.counts[i]}</b></div>`});
+    h+=`</div></div><div class="muted" style="font-size:.88rem">กด ⏮ ◀ หรือแตะตาเดินในบันทึก เพื่อดูว่าแต่ละตาควรเดินอย่างไร</div></div>`;
+  }
+  box.innerHTML=h;
+}
+const verdict=a=>a>=90?"ยอดเยี่ยม":a>=78?"ดีมาก":a>=62?"พอใช้":"ต้องฝึกเพิ่ม";
+
+/* ---------- Analysis ---------- */
+function winPct(cp){cp=Math.max(-2000,Math.min(2000,cp));return 50+50*(2/(1+Math.exp(-.00368208*cp))-1)}
+function phaseOf(st){
+  let npm=0;for(const p of st.b)if(p){const t=p.toLowerCase();if(t!=="p"&&t!=="k")npm+=VAL[t]}
+  if(npm<=1800)return"end";return st.n<=10?"open":"mid";
+}
+function analyzePly(i,D){
+  const st=states[i],mv=moves[i],ms=order(legal(st));
+  let best=ms[0],bv=-INF;
+  for(const m of ms){const v=-negamax(make(st,m),D-1,-INF,-bv,1);if(v>bv){bv=v;best=m}}
+  const pm=ms.find(m=>m.f===mv.f&&m.t===mv.t&&(m.pr||"")===(mv.pr||""))||best;
+  const same=pm===best,pv=same?bv:-negamax(make(st,pm),D-1,-INF,INF,1);
+  const cl=v=>Math.max(-1500,Math.min(1500,v)),loss=same?0:Math.max(0,cl(bv)-cl(pv));
+  const drop=Math.max(0,winPct(bv)-winPct(pv));
+  const accW=103.1668*Math.exp(-.04354*drop)-3.1669,accC=100*Math.exp(-loss/250);
+  const acc=Math.max(0,Math.min(100,accW,accC));
+  const c=loss<=5?0:loss<=30?1:loss<=70?2:loss<=150?3:loss<=300?4:5;
+  return{c,acc:Math.round(acc*10)/10,ph:phaseOf(st),best:same?null:san(st,best,ms)};
+}
+function summarize(res){
+  const counts=[0,0,0,0,0,0],ph={open:{n:0,s:0},mid:{n:0,s:0},end:{n:0,s:0}};let tot=0,n=0;
+  for(const k in res){const a=res[k];counts[a.c]++;ph[a.ph].n++;ph[a.ph].s+=a.acc;tot+=a.acc;n++}
+  for(const k in ph)ph[k].acc=ph[k].n?ph[k].s/ph[k].n:0;
+  return{counts,ph,acc:n?tot/n:0,total:n};
+}
+function runAnalysis(){
+  const g=DB.game;
+  if(analyzing||!g||!g.result||g.analysis)return;
+  const idx=[];for(let i=0;i<moves.length;i++)if(states[i].t===g.player)idx.push(i);
+  if(!idx.length){g.analysis={none:true};save();renderGame();return}
+  analyzing=true;anaDone=0;anaTotal=idx.length;
+  const res={},id=gameId,D=idx.length>45?2:3;let k=0;
+  renderGame();
+  const step=()=>{
+    if(id!==gameId||DB.game!==g){analyzing=false;return}
+    res[idx[k]]=analyzePly(idx[k],D);k++;anaDone=k;
+    const bar=$("progBar");
+    if(k<idx.length){if(bar&&screen==="game"){bar.style.width=Math.round(k/idx.length*100)+"%";bar.parentNode.previousSibling.textContent=`กำลังวิเคราะห์การเดินของคุณ ${k}/${idx.length}`}setTimeout(step,0)}
+    else{g.analysis={moves:res,sum:summarize(res)};analyzing=false;save();renderGame()}
+  };
+  setTimeout(step,40);
+}
+
+/* ---------- Lessons ---------- */
+const todayLessonIdx=()=>((dayNum(today())%LESSONS.length)+LESSONS.length)%LESSONS.length;
+const lessonBoard=new Board($("lessonBoard"),true,onLessonSq);
+let LS={idx:0,st:null,sel:-1,targets:[],solved:false,hint:-1,last:null,fb:""};
+function openLesson(i){
+  LS={idx:(i+LESSONS.length)%LESSONS.length,sel:-1,targets:[],solved:false,hint:-1,last:null,fb:""};
+  LS.st=fromFen(LESSONS[LS.idx].fen);lessonBoard.flip=LS.st.t==="b";
+  if(screen!=="lesson")show("lesson");else renderLesson();
+}
+function onLessonSq(sq){
+  if(LS.solved)return;
+  const hits=LS.targets.filter(m=>m.t===sq);
+  if(LS.sel>=0&&hits.length){tryLesson(hits.find(m=>m.pr==="q")||hits[0]);return}
+  const p=LS.st.b[sq];
+  if(p&&colorOf(p)===LS.st.t&&sq!==LS.sel){LS.sel=sq;LS.targets=legal(LS.st).filter(m=>m.f===sq)}else{LS.sel=-1;LS.targets=[]}
+  renderLesson();
+}
+function tryLesson(m){
+  const L=LESSONS[LS.idx];
+  LS.sel=-1;LS.targets=[];
+  if(L.sol.includes(uciOf(m))){
+    LS.st=make(LS.st,m);LS.last=m;LS.solved=true;LS.hint=-1;beep(m.cap);
+    LS.fb=`<div class="fb good"><b>ถูกต้อง! ✅</b><br>${L.exp}</div>`;
+    if(!DB.lesson.solved.includes(LS.idx))DB.lesson.solved.push(LS.idx);
+    if(LS.idx===todayLessonIdx()&&DB.lesson.done!==today()){DB.lesson.done=today();save();addCoins(30,"จากบทเรียนประจำวัน")}else save();
+  }else{
+    LS.fb=`<div class="fb bad"><b>ยังไม่ใช่ตานี้</b><br>ตานี้เดินได้ แต่ยังไม่ใช่ตาที่ดีที่สุด ลองมองหาใหม่อีกครั้ง หรือกดขอคำใบ้</div>`;
+  }
+  renderLesson();
+}
+function renderLesson(){
+  refreshCoins();
+  const L=LESSONS[LS.idx],isToday=LS.idx===todayLessonIdx();
+  lessonBoard.draw(LS.st,{sel:LS.sel,targets:LS.targets,hint:LS.hint,last:LS.last,check:inCheck(LS.st)?kingSq(LS.st.b,LS.st.t):-1});
+  $("lessonChip").textContent=isToday?"บทเรียนวันนี้":"ฝึกเพิ่มเติม";
+  $("lessonNo").textContent=`บทที่ ${LS.idx+1} จาก ${LESSONS.length}${DB.lesson.solved.includes(LS.idx)?" ✓ เคยทำสำเร็จ":""}`;
+  $("lessonTitle").textContent=L.t;$("lessonTip").textContent=L.tip;$("lessonGoal").textContent=L.goal;
+  $("lessonFb").innerHTML=LS.fb;
+  $("lHint").disabled=LS.solved;
+  $("lessonReward").textContent=isToday?(DB.lesson.done===today()?"รับรางวัลบทเรียนวันนี้แล้ว ✓ พรุ่งนี้มีบทใหม่":"ทำบทเรียนวันนี้สำเร็จ รับ 30 🪙"):"บทเรียนอื่นฝึกได้ไม่จำกัด (รางวัลให้เฉพาะบทของวันนี้)";
+}
+$("lHint").onclick=()=>{LS.hint=+sqIndex(LESSONS[LS.idx].sol[0].slice(0,2));LS.fb=`<div class="fb" style="background:var(--panel)">💡 ลองเดินหมากในช่องที่ขอบสีเขียว</div>`;renderLesson()};
+$("lReset").onclick=()=>openLesson(LS.idx);
+$("lPrev").onclick=()=>openLesson(LS.idx-1);
+$("lNext").onclick=()=>openLesson(LS.idx+1);
+const sqIndex=s=>(8-+s[1])*8+FILES.indexOf(s[0]);
+
+/* ---------- Login ---------- */
+function renderLogin(){
+  refreshCoins();
+  const ls=loginState(),box=$("days");box.innerHTML="";
+  const gotUpTo=ls.claimed?ls.day:ls.day-1;
+  LOGIN_REWARD.forEach((r,i)=>{
+    const d=document.createElement("div");
+    d.className="day"+(i<gotUpTo?" got":"")+(!ls.claimed&&i===ls.day-1?" now":"");
+    d.innerHTML=`<div class="dn">วันที่ ${i+1}</div><div class="dc">${i<gotUpTo?"✅":i===6?"🎁":"🪙"}</div><div class="dv">${r}</div>`;
+    box.appendChild(d);
+  });
+  const b=$("claimBtn");
+  if(ls.claimed){b.disabled=true;b.textContent="รับรางวัลวันนี้แล้ว กลับมาใหม่พรุ่งนี้";}
+  else{b.disabled=false;b.textContent=`รับ ${LOGIN_REWARD[ls.day-1]} 🪙 ของวันที่ ${ls.day}`}
+  $("loginInfo").textContent=`ล็อกอินต่อเนื่อง ${ls.claimed?ls.streak:ls.streak} วัน`;
+}
+$("claimBtn").onclick=()=>{
+  const ls=loginState();if(ls.claimed)return;
+  DB.login={last:today(),streak:ls.next};
+  addCoins(LOGIN_REWARD[ls.day-1],`ล็อกอินวันที่ ${ls.day}`);renderLogin();
+};
+
+/* ---------- Settings ---------- */
+function renderSettings(){
+  refreshCoins();
+  for(const b of document.querySelectorAll(".sw"))b.setAttribute("aria-checked",String(!!DB.settings[b.dataset.k]));
+  const locked=gameActive();
+  $("themeCount").textContent=`มีทั้งหมด ${THEMES.length} ธีม ปลดล็อกแล้ว ${DB.owned.length} ธีม ใช้เหรียญปลดล็อกธีมที่เหลือได้`;
+  $("themeLock").innerHTML=locked?'<div class="lockbar">มีเกมที่ยังเล่นไม่จบ เปลี่ยนธีมได้เมื่อเกมจบแล้ว (หรือกดยอมแพ้ในหน้าเกม)</div>':"";
+  const box=$("themes");box.innerHTML="";
+  THEMES.forEach((t,i)=>{
+    const own=DB.owned.includes(i),on=DB.settings.theme===i,b=document.createElement("button");
+    b.className="th"+(on?" on":"");b.disabled=locked&&!on;
+    const wp=t[4]||"#FBFBF7",bp=t[5]||"#18212A",wo=t[6]||"#1B242B",bo=t[7]||"rgba(255,255,255,.5)";
+    const pw=`color:${wp};text-shadow:1px 0 0 ${wo},-1px 0 0 ${wo},0 1px 0 ${wo},0 -1px 0 ${wo}`,pb=`color:${bp};text-shadow:1px 0 0 ${bo},-1px 0 0 ${bo},0 1px 0 ${bo},0 -1px 0 ${bo}`;
+    b.innerHTML=`<div class="sw4" style="box-shadow:0 0 0 3px ${t[3]}">
+      <span style="background:${t[1]};${pb}">${GLYPH.n+VS}</span><span style="background:${t[2]};${pb}">${GLYPH.k+VS}</span>
+      <span style="background:${t[1]};${pw}">${GLYPH.q+VS}</span><span style="background:${t[2]};${pw}">${GLYPH.b+VS}</span></div>
+      <div class="tn">${t[0]}</div><div class="tp">${on?"✓ ใช้อยู่":own?"ปลดล็อกแล้ว":"🔒 "+themePrice(i)+" 🪙"}</div>`;
+    b.onclick=()=>pickTheme(i);
+    box.appendChild(b);
+  });
+}
+function pickTheme(i){
+  if(gameActive()){toast("เปลี่ยนธีมได้เมื่อเกมจบแล้ว");return}
+  if(DB.owned.includes(i)){DB.settings.theme=i;save();applyTheme();renderSettings();return}
+  const price=themePrice(i);
+  if(DB.coins<price){toast(`เหรียญไม่พอ ต้องใช้ ${price} 🪙 (มี ${DB.coins})`);return}
+  modal(`ปลดล็อกธีม "${THEMES[i][0]}"?`,`ใช้ ${price} 🪙 จากที่มีอยู่ ${DB.coins} 🪙`,[
+    {label:"ยกเลิก"},{label:"ปลดล็อกและใช้เลย",primary:true,fn:()=>{DB.coins-=price;DB.owned.push(i);DB.settings.theme=i;save();applyTheme();renderSettings();toast("ปลดล็อกธีมใหม่แล้ว 🎨")}}]);
+}
+for(const b of document.querySelectorAll(".sw"))b.onclick=()=>{DB.settings[b.dataset.k]=!DB.settings[b.dataset.k];save();renderSettings()};
+$("resetAll").onclick=()=>modal("ล้างข้อมูลทั้งหมด?","เหรียญ ธีมที่ปลดล็อก สถิติ และเกมที่ค้างอยู่จะหายทั้งหมด",[
+  {label:"ยกเลิก"},{label:"ล้างข้อมูล",primary:true,fn:()=>{gameId++;DB=defaults();save();applyTheme();loadGame();toast("ล้างข้อมูลแล้ว");show("menu")}}]);
+
+/* ---------- Boot ---------- */
+new MutationObserver(()=>{if(!$("modal").classList.contains("show"))modal.locked=false}).observe($("modal"),{attributes:true});
+applyTheme();loadGame();refreshCoins();show("menu");
+})();
+</script>
+</body>
+</html>
