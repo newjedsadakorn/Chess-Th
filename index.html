@@ -2,7 +2,15 @@
 <html lang="th">
 <head>
 <meta charset="utf-8">
-<meta name="version" content="1.5.0">
+<meta name="version" content="1.6.1">
+<meta name="theme-color" content="#312E2B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="หมากรุก">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>หมากรุก — เล่นกับคอมพิวเตอร์</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -208,7 +216,7 @@ button.sq{cursor:pointer}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* game (chess.com-like) */
-#scr-game{--sq:clamp(34px, min(calc((100vw - 16px) / 8), calc((100vh - 410px) / 8)), 72px);padding-bottom:110px}
+#scr-game{--sq:clamp(34px, min(calc((100vw - 16px) / 8), calc((100vh - 410px) / 8)), 72px);--sq:clamp(34px, min(calc((100vw - 16px) / 8), calc((100dvh - 410px) / 8)), 72px);padding-bottom:110px}
 .gwrap{width:calc(var(--sq) * 8);margin:0 auto;display:flex;flex-direction:column}
 .mstrip{display:flex;align-items:center;gap:2px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;padding:6px 0 10px;font-size:1rem}
 .mstrip::-webkit-scrollbar{display:none}
@@ -347,10 +355,11 @@ button.sq{cursor:pointer}
         <button class="mbtn" id="mNew"><span>เริ่มเกมใหม่<small>เลือกสีและระดับความยาก</small></span></button>
         <button class="mbtn" id="mLesson"><span>บทเรียนประจำวัน<small id="lessonInfo"></small></span><span class="badge" id="lessonBadge"></span></button>
         <button class="mbtn" id="mLogin"><span>ล็อกอินรายวัน<small>รับเหรียญทุกวัน ไว้ปลดล็อกธีม</small></span><span class="badge" id="loginBadge"></span></button>
+        <button class="mbtn" id="mInstall" hidden><span>ติดตั้งลงมือถือ<small>เปิดเป็นแอปจากหน้าจอหลัก เล่นได้แม้ออฟไลน์</small></span><span class="badge">ใหม่</span></button>
         <button class="mbtn" id="mSettings"><span>ตั้งค่า<small>ธีมกระดาน เสียง และการแสดงผล</small></span></button>
       </nav>
       <p class="stats" id="statsTxt"></p>
-      <p class="stats" style="margin-top:4px;font-size:.78rem">เวอร์ชัน 1.5.0</p>
+      <p class="stats" style="margin-top:4px;font-size:.78rem">เวอร์ชัน 1.6.1</p>
     </div>
   </div>
   <section class="hist" aria-label="ประวัติการเล่น">
@@ -459,7 +468,7 @@ button.sq{cursor:pointer}
       <div class="themes" id="themes"></div>
     </div>
     <div class="card">
-      <div class="toggle"><span>เวอร์ชัน</span><span class="muted" id="verTxt">1.5.0</span></div>
+      <div class="toggle"><span>เวอร์ชัน</span><span class="muted" id="verTxt">1.6.1</span></div>
       <div class="toggle"><span>ล้างข้อมูลทั้งหมด (เหรียญ ธีม สถิติ และเกมที่ค้างอยู่)</span><button class="btn danger" id="resetAll">ล้างข้อมูล</button></div>
     </div>
   </div>
@@ -471,7 +480,7 @@ button.sq{cursor:pointer}
 <script>
 (function(){
 "use strict";
-const APP_VERSION="1.5.0";
+const APP_VERSION="1.6.1";
 
 const VS="\uFE0E";
 const GLYPH={k:"♚",q:"♛",r:"♜",b:"♝",n:"♞",p:"♟"};
@@ -585,7 +594,10 @@ function evaluate(st){
 function scoreMove(m){return (m.cap?10*VAL[m.cap]-VAL[m.pc]+1000:0)+(m.pr?VAL[m.pr]:0)}
 function order(ms){for(const m of ms)m._s=scoreMove(m);ms.sort((a,b)=>b._s-a._s);return ms}
 
+let NODES=0,DEADLINE=Infinity;const ABORT={abort:true};
+function tickNodes(){if((++NODES&1023)===0&&Date.now()>DEADLINE)throw ABORT}
 function quiesce(st,alpha,beta,qd){
+  tickNodes();
   const stand=evaluate(st);
   if(stand>=beta)return beta;
   if(stand>alpha)alpha=stand;
@@ -601,6 +613,7 @@ function quiesce(st,alpha,beta,qd){
   return alpha;
 }
 function negamax(st,depth,alpha,beta,ply){
+  tickNodes();
   if(st.h>=100)return 0;
   if(depth<=0)return quiesce(st,alpha,beta,0);
   const ms=legal(st);
@@ -623,12 +636,17 @@ function pickMove(st,lvl){
     const ok=sc.filter(x=>x.v>=sc[0].v-90);
     return ok[Math.floor(Math.random()*ok.length)].m;
   }
-  const depth=lvl===1?2:4;
-  let best=ms[0],alpha=-INF;
-  for(const m of ms){
-    const v=-negamax(make(st,m),depth-1,-INF,-alpha,1);
-    if(v>alpha){alpha=v;best=m}
-  }
+  const maxD=lvl===1?2:4,budget=lvl===1?1500:1200;
+  let best=ms[0];DEADLINE=Date.now()+budget;
+  try{
+    for(let d=1;d<=maxD;d++){
+      let b=ms[0],alpha=-INF;
+      for(const m of ms){const v=-negamax(make(st,m),d-1,-INF,-alpha,1);if(v>alpha){alpha=v;b=m}}
+      best=b;ms.splice(ms.indexOf(b),1);ms.unshift(b);
+      if(alpha>MATE-200)break;
+    }
+  }catch(err){if(err!==ABORT){DEADLINE=Infinity;throw err}}
+  DEADLINE=Infinity;
   return best;
 }
 function san(st,m,list){
@@ -1026,6 +1044,7 @@ function posOutcome(){
 }
 function finalize(o,silent){
   const g=CG;if(!g||g.result)return;
+  if(pendingPromo){pendingPromo=false;modal.locked=false;closeModal()}
   const rw=o.code==="win"?WIN_REWARD[g.level]:o.code==="draw"?10:5;
   const r0=DB.rating||800,exp=1/(1+Math.pow(10,(BOT_RATING[g.level]-r0)/400)),sc=o.code==="win"?1:o.code==="draw"?.5:0;
   DB.rating=Math.max(100,r0+Math.round(32*(sc-exp)));
@@ -1041,6 +1060,7 @@ function finalize(o,silent){
   }
 }
 function play(m){
+  if(!cgActive())return;
   const st=cur(),list=legal(st);
   moves.push({f:m.f,t:m.t,pr:m.pr||"",cap:m.cap,san:san(st,m,list)});
   states.push(make(st,m));
@@ -1109,6 +1129,10 @@ function drawClocks(){
   }
 }
 
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden)stopClock();else if(screen==="game")startClock();
+});
+
 /* view / nav */
 function setView(v){if(!CG)return;sel=-1;targets=[];view=(v===null||v>=moves.length)?null:Math.max(0,v);renderGame()}
 $("nPrev").onclick=()=>{clsNav=null;setView((view===null?moves.length:view)-1)};
@@ -1154,6 +1178,7 @@ function renderGame(){
   if(screen!=="game")return;
   refreshCoins();
   const g=CG;if(!g){show("menu");return}
+  if(g.result&&!g.analysis&&!analyzing)runAnalysis();
   const P=g.player,shown=view===null?moves.length:view,st=states[shown];
   const A=g.analysis&&g.analysis.moves,lm=shown?moves[shown-1]:null;
   gameBoard.flip=(P==="b")!==flipped;
@@ -1284,7 +1309,9 @@ function analyzePly(i,D){
   for(const m of ms){const v=-negamax(make(st,m),D-1,-INF,-bv,1);if(v>bv){bv=v;best=m}}
   const pm=ms.find(m=>m.f===mv.f&&m.t===mv.t&&(m.pr||"")===(mv.pr||""))||best;
   const same=pm===best,after=make(st,pm),pv=same?bv:-negamax(after,D-1,-INF,INF,1);
-  const loss=same?0:Math.max(0,clampCp(bv)-clampCp(pv));
+  // mate scores stay ordered above any material score, so "lost vs more lost" still counts
+  const evC=v=>Math.abs(v)>MATE-1000?Math.sign(v)*(20000-(MATE-Math.abs(v))):Math.max(-9000,Math.min(9000,v));
+  const loss=same?0:Math.max(0,evC(bv)-evC(pv));
   const drop=Math.max(0,winPct(bv)-winPct(pv));
   let acc=Math.max(0,Math.min(100,103.1668*Math.exp(-.04354*drop)-3.1669,100*Math.exp(-loss/250)));
   const book=BOOK.has(bookKey(after))&&BOOK.has(bookKey(st));
@@ -1304,6 +1331,13 @@ function analyzePly(i,D){
   const w=st.t==="w"?1:-1;
   return{c,acc:Math.round(acc*10)/10,ph:phaseOf(st),tac,side:st.t,best:same?null:san(st,best,ms),ev:w*clampCp(pv),ev0:w*clampCp(bv)};
 }
+function analyzeSafe(i,D){
+  for(let d=D;d>=1;d--){
+    DEADLINE=d===1?Infinity:Date.now()+800;
+    try{const r=analyzePly(i,d);DEADLINE=Infinity;return r}
+    catch(err){DEADLINE=Infinity;if(err!==ABORT)throw err}
+  }
+}
 const estRating=a=>Math.max(100,Math.min(2800,Math.round(2700*Math.pow(a/100,2.6)/50)*50));
 const mean=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
 function summarize(res){
@@ -1322,7 +1356,7 @@ function runAnalysis(){
   const res={},id=gameId,D=moves.length>90?2:3;let k=0;
   const step=()=>{
     if(id!==gameId||CG!==g){analyzing=false;return}
-    res[k]=analyzePly(k,D);k++;anaDone=k;
+    res[k]=analyzeSafe(k,D);k++;anaDone=k;
     if(k<moves.length){
       for(const b of document.querySelectorAll(".pbar-i"))b.style.width=Math.round(k/moves.length*100)+"%";
       for(const x of document.querySelectorAll(".ptxt"))x.textContent=`กำลังวิเคราะห์เกม ${k}/${moves.length}`;
@@ -1356,6 +1390,7 @@ function graphHTML(A){
 function renderReview(){
   const g=CG,body=$("rvBody");
   if(!g||!g.result){show("menu");return}
+  if(!g.analysis&&!analyzing)runAnalysis();
   const r=g.result,A=g.analysis&&g.analysis.moves,S=g.analysis&&g.analysis.sum,P=g.player;
   const icon=r.code==="win"?"🏆":r.code==="draw"?"🤝":"🏳️";
   const who=c=>c===P?{n:DB.name||"คุณ",av:`<div class="av me">${pieceHTML(c==="w"?"P":"p",0)}</div>`}:{n:"คอมพิวเตอร์",av:`<div class="av">${BOT_SVG}</div>`};
@@ -1535,6 +1570,24 @@ $("nameIn").oninput=e=>{DB.name=e.target.value.trim();save()};
 for(const b of document.querySelectorAll(".sw"))b.onclick=()=>{DB.settings[b.dataset.k]=!DB.settings[b.dataset.k];save();renderSettings()};
 $("resetAll").onclick=()=>modal("ล้างข้อมูลทั้งหมด?","เหรียญ ธีมที่ปลดล็อก สถิติ และเกมที่ค้างอยู่จะหายทั้งหมด",[
   {label:"ยกเลิก"},{label:"ล้างข้อมูล",primary:true,fn:()=>{gameId++;DB=defaults();CG=null;save();applyTheme();loadGame();toast("ล้างข้อมูลแล้ว");show("menu")}}]);
+
+/* ---------- Install (PWA) ---------- */
+let installEvt=null,swOK=false;
+const isStandalone=()=>window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const inAppBrowser=()=>/Line\/|FBAN|FBAV|Instagram|MicroMessenger|TikTok/i.test(navigator.userAgent);
+function refreshInstall(){$("mInstall").hidden=isStandalone()||!(installEvt||swOK)}
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;refreshInstall()});
+window.addEventListener("appinstalled",()=>{installEvt=null;refreshInstall();toast("ติดตั้งเรียบร้อย เปิดได้จากหน้าจอหลัก")});
+if("serviceWorker" in navigator&&(location.protocol==="https:"||location.hostname==="localhost")){
+  try{navigator.serviceWorker.register("sw.js").then(()=>{swOK=true;refreshInstall()}).catch(()=>{})}catch(e){}
+}
+$("mInstall").onclick=async()=>{
+  if(installEvt){installEvt.prompt();try{await installEvt.userChoice}catch(e){}installEvt=null;refreshInstall();return}
+  if(inAppBrowser())modal("เปิดด้วยเบราว์เซอร์ก่อน","แอปที่เปิดลิงก์อยู่ (เช่น LINE หรือ Facebook) ติดตั้งไม่ได้ ให้กดเมนูแล้วเลือก เปิดในเบราว์เซอร์ (Chrome หรือ Safari) แล้วกดติดตั้งอีกครั้ง",[{label:"เข้าใจแล้ว",primary:true}]);
+  else if(isIOS())modal("ติดตั้งบน iPhone / iPad","ใน Safari แตะปุ่มแชร์ (สี่เหลี่ยมมีลูกศรชี้ขึ้น) เลื่อนลงแล้วเลือก เพิ่มไปยังหน้าจอโฮม จากนั้นกด เพิ่ม",[{label:"เข้าใจแล้ว",primary:true}]);
+  else modal("ติดตั้งบน Android","ใน Chrome แตะเมนู ⋮ มุมขวาบน แล้วเลือก ติดตั้งแอป หรือ เพิ่มลงในหน้าจอหลัก",[{label:"เข้าใจแล้ว",primary:true}]);
+};
 
 /* ---------- Boot ---------- */
 new MutationObserver(()=>{if(!$("modal").classList.contains("show"))modal.locked=false}).observe($("modal"),{attributes:true});
