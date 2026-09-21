@@ -1,5 +1,5 @@
 // Service worker for หมากรุก (chess-solo). เปลี่ยน VERSION ทุกครั้งที่ออกเวอร์ชันใหม่
-const VERSION = "1.7.0";
+const VERSION = "1.8.0";
 const CACHE = "chess-solo-" + VERSION;
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png"];
 
